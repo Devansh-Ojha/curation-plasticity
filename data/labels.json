@@ -1,0 +1,619 @@
+{
+  "t_af2a6108": {
+    "task_id": "t_af2a6108",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_4af85578": {
+    "task_id": "t_4af85578",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_c5912fff": {
+    "task_id": "t_c5912fff",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_49631718": {
+    "task_id": "t_49631718",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_1d1efc38": {
+    "task_id": "t_1d1efc38",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_4c0eb56e": {
+    "task_id": "t_4c0eb56e",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_a8e3d4cc": {
+    "task_id": "t_a8e3d4cc",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_72221c66": {
+    "task_id": "t_72221c66",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_5838ec98": {
+    "task_id": "t_5838ec98",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_3a34f978": {
+    "task_id": "t_3a34f978",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_1e9f2a74": {
+    "task_id": "t_1e9f2a74",
+    "category": "learnable",
+    "requires_quirks": [
+      "customer_id_rename",
+      "idempotency_key"
+    ]
+  },
+  "t_3eae45c7": {
+    "task_id": "t_3eae45c7",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_b9d3e015": {
+    "task_id": "t_b9d3e015",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_197688e4": {
+    "task_id": "t_197688e4",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_10882eb7": {
+    "task_id": "t_10882eb7",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_f74a1e29": {
+    "task_id": "t_f74a1e29",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_da84c757": {
+    "task_id": "t_da84c757",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_c11c6d3b": {
+    "task_id": "t_c11c6d3b",
+    "category": "learnable",
+    "requires_quirks": [
+      "customer_id_rename",
+      "idempotency_key"
+    ]
+  },
+  "t_fc7c1892": {
+    "task_id": "t_fc7c1892",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_fe09daf0": {
+    "task_id": "t_fe09daf0",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_8132e8c6": {
+    "task_id": "t_8132e8c6",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_ed548977": {
+    "task_id": "t_ed548977",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_a8576247": {
+    "task_id": "t_a8576247",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_ceb4c991": {
+    "task_id": "t_ceb4c991",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_6d0cc5d0": {
+    "task_id": "t_6d0cc5d0",
+    "category": "impossible",
+    "requires_quirks": []
+  },
+  "t_503ccd86": {
+    "task_id": "t_503ccd86",
+    "category": "impossible",
+    "requires_quirks": []
+  },
+  "t_ebac210d": {
+    "task_id": "t_ebac210d",
+    "category": "flaky_judge",
+    "requires_quirks": []
+  },
+  "t_664cb530": {
+    "task_id": "t_664cb530",
+    "category": "flaky_judge",
+    "requires_quirks": []
+  },
+  "t_b4b5c809": {
+    "task_id": "t_b4b5c809",
+    "category": "flaky_ambiguous",
+    "requires_quirks": []
+  },
+  "t_6110c830": {
+    "task_id": "t_6110c830",
+    "category": "flaky_ambiguous",
+    "requires_quirks": []
+  },
+  "t_f3c2413a": {
+    "task_id": "t_f3c2413a",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_5966b202": {
+    "task_id": "t_5966b202",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_8e138058": {
+    "task_id": "t_8e138058",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_b925087c": {
+    "task_id": "t_b925087c",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_4895ef87": {
+    "task_id": "t_4895ef87",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_491c1d97": {
+    "task_id": "t_491c1d97",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_f8f20cfc": {
+    "task_id": "t_f8f20cfc",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_6e4cc031": {
+    "task_id": "t_6e4cc031",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_5ec3e4c1": {
+    "task_id": "t_5ec3e4c1",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_ec1fb079": {
+    "task_id": "t_ec1fb079",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_4798bf5d": {
+    "task_id": "t_4798bf5d",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_ab1fdaf1": {
+    "task_id": "t_ab1fdaf1",
+    "category": "learnable",
+    "requires_quirks": [
+      "customer_id_rename",
+      "idempotency_key"
+    ]
+  },
+  "t_4d56498a": {
+    "task_id": "t_4d56498a",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_09b220f6": {
+    "task_id": "t_09b220f6",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_ed5889a2": {
+    "task_id": "t_ed5889a2",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_e646027e": {
+    "task_id": "t_e646027e",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_e95e8064": {
+    "task_id": "t_e95e8064",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_97b1957f": {
+    "task_id": "t_97b1957f",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_3aa2aa41": {
+    "task_id": "t_3aa2aa41",
+    "category": "learnable",
+    "requires_quirks": [
+      "customer_id_rename",
+      "idempotency_key"
+    ]
+  },
+  "t_c9554efd": {
+    "task_id": "t_c9554efd",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_c8382068": {
+    "task_id": "t_c8382068",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_8a64f8ec": {
+    "task_id": "t_8a64f8ec",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_097c4671": {
+    "task_id": "t_097c4671",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_868b7984": {
+    "task_id": "t_868b7984",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_9d9c0000": {
+    "task_id": "t_9d9c0000",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_a5e27e91": {
+    "task_id": "t_a5e27e91",
+    "category": "learnable",
+    "requires_quirks": [
+      "customer_id_rename",
+      "idempotency_key"
+    ]
+  },
+  "t_4a8c4a23": {
+    "task_id": "t_4a8c4a23",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_0312e78b": {
+    "task_id": "t_0312e78b",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_b81bf67c": {
+    "task_id": "t_b81bf67c",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_b72f163a": {
+    "task_id": "t_b72f163a",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_455e5302": {
+    "task_id": "t_455e5302",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_2497f42e": {
+    "task_id": "t_2497f42e",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_d733f1ad": {
+    "task_id": "t_d733f1ad",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_c568e74d": {
+    "task_id": "t_c568e74d",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_8ee8765c": {
+    "task_id": "t_8ee8765c",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_ffa969f9": {
+    "task_id": "t_ffa969f9",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_09c4d654": {
+    "task_id": "t_09c4d654",
+    "category": "easy",
+    "requires_quirks": []
+  },
+  "t_190195e3": {
+    "task_id": "t_190195e3",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_e579d6a8": {
+    "task_id": "t_e579d6a8",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_f68b219d": {
+    "task_id": "t_f68b219d",
+    "category": "learnable",
+    "requires_quirks": [
+      "customer_id_rename",
+      "idempotency_key"
+    ]
+  },
+  "t_e5d06ce5": {
+    "task_id": "t_e5d06ce5",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_8fe760ac": {
+    "task_id": "t_8fe760ac",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_b47cab65": {
+    "task_id": "t_b47cab65",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_80fe683f": {
+    "task_id": "t_80fe683f",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_5061eb00": {
+    "task_id": "t_5061eb00",
+    "category": "learnable",
+    "requires_quirks": [
+      "customer_id_rename",
+      "idempotency_key"
+    ]
+  },
+  "t_e295ea16": {
+    "task_id": "t_e295ea16",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_1e34c831": {
+    "task_id": "t_1e34c831",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_be5409d2": {
+    "task_id": "t_be5409d2",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_4d2cda29": {
+    "task_id": "t_4d2cda29",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_d57e22f7": {
+    "task_id": "t_d57e22f7",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_c17e7ee1": {
+    "task_id": "t_c17e7ee1",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_68931747": {
+    "task_id": "t_68931747",
+    "category": "learnable",
+    "requires_quirks": [
+      "customer_id_rename",
+      "idempotency_key"
+    ]
+  },
+  "t_a7eee532": {
+    "task_id": "t_a7eee532",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_4e911f8d": {
+    "task_id": "t_4e911f8d",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  },
+  "t_44ade865": {
+    "task_id": "t_44ade865",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_938900ef": {
+    "task_id": "t_938900ef",
+    "category": "learnable",
+    "requires_quirks": [
+      "pagination"
+    ]
+  },
+  "t_df84695b": {
+    "task_id": "t_df84695b",
+    "category": "learnable",
+    "requires_quirks": [
+      "auth_header"
+    ]
+  },
+  "t_4c64618c": {
+    "task_id": "t_4c64618c",
+    "category": "learnable",
+    "requires_quirks": [
+      "cents",
+      "iso_date",
+      "idempotency_key"
+    ]
+  },
+  "t_3b696c3d": {
+    "task_id": "t_3b696c3d",
+    "category": "learnable",
+    "requires_quirks": [
+      "customer_id_rename",
+      "idempotency_key"
+    ]
+  },
+  "t_4d740c51": {
+    "task_id": "t_4d740c51",
+    "category": "learnable",
+    "requires_quirks": [
+      "bracket_filtering"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+# Local Python environments and generated caches
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Raw API logs and generated run outputs can contain prompts and responses
+logs/
+logs_old/
+outputs/
+
+# Generated task-suite variants; keep the canonical data/ directory tracked
+data_baseline/
+data_eval_*/
+data_leak_test/
+data_pilot/
+data_smoke_real/

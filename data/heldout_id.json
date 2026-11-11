@@ -1,0 +1,322 @@
+[
+  {
+    "task_id": "t_f3c2413a",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_5966b202",
+    "instruction": "List all orders across all pages and return the ID of the last order in the system.",
+    "expected": {
+      "type": "exact",
+      "target_val": "ord_105"
+    }
+  },
+  {
+    "task_id": "t_8e138058",
+    "instruction": "Retrieve invoice 'inv_502' using the provided API key 'secret_test_key' and return its total_cents.",
+    "expected": {
+      "type": "exact",
+      "target_val": "12500"
+    }
+  },
+  {
+    "task_id": "t_b925087c",
+    "instruction": "Create a new order for customer 'u1' with total amount of 50.00 dollars on date '2024-05-10'. Return the new order ID.",
+    "expected": {
+      "type": "contains",
+      "target_val": "ord_"
+    }
+  },
+  {
+    "task_id": "t_4895ef87",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_491c1d97",
+    "instruction": "Find all users with role 'admin' and return their customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u1"
+    }
+  },
+  {
+    "task_id": "t_f8f20cfc",
+    "instruction": "Find all orders with status 'completed' and return how many orders were found.",
+    "expected": {
+      "type": "count",
+      "target_val": 3
+    }
+  },
+  {
+    "task_id": "t_6e4cc031",
+    "instruction": "List all users and report the total count of users across all pages.",
+    "expected": {
+      "type": "count",
+      "target_val": 5
+    }
+  },
+  {
+    "task_id": "t_5ec3e4c1",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_ec1fb079",
+    "instruction": "Retrieve invoice 'inv_502' using the provided API key 'secret_test_key' and return its total_cents.",
+    "expected": {
+      "type": "exact",
+      "target_val": "12500"
+    }
+  },
+  {
+    "task_id": "t_4798bf5d",
+    "instruction": "Create a new order for customer 'u1' with total amount of 50.00 dollars on date '2024-05-10'. Return the new order ID.",
+    "expected": {
+      "type": "contains",
+      "target_val": "ord_"
+    }
+  },
+  {
+    "task_id": "t_ab1fdaf1",
+    "instruction": "Create a new user named 'Frank Miller' with email 'frank@example.com' and ID 'u6'. Return the created customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u6"
+    }
+  },
+  {
+    "task_id": "t_4d56498a",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_09b220f6",
+    "instruction": "Find all orders with status 'completed' and return how many orders were found.",
+    "expected": {
+      "type": "count",
+      "target_val": 3
+    }
+  },
+  {
+    "task_id": "t_ed5889a2",
+    "instruction": "List all users and report the total count of users across all pages.",
+    "expected": {
+      "type": "count",
+      "target_val": 5
+    }
+  },
+  {
+    "task_id": "t_e646027e",
+    "instruction": "List all orders across all pages and return the ID of the last order in the system.",
+    "expected": {
+      "type": "exact",
+      "target_val": "ord_105"
+    }
+  },
+  {
+    "task_id": "t_e95e8064",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_97b1957f",
+    "instruction": "Create a new order for customer 'u1' with total amount of 50.00 dollars on date '2024-05-10'. Return the new order ID.",
+    "expected": {
+      "type": "contains",
+      "target_val": "ord_"
+    }
+  },
+  {
+    "task_id": "t_3aa2aa41",
+    "instruction": "Create a new user named 'Frank Miller' with email 'frank@example.com' and ID 'u6'. Return the created customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u6"
+    }
+  },
+  {
+    "task_id": "t_c9554efd",
+    "instruction": "Find all users with role 'admin' and return their customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u1"
+    }
+  },
+  {
+    "task_id": "t_c8382068",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_8a64f8ec",
+    "instruction": "List all users and report the total count of users across all pages.",
+    "expected": {
+      "type": "count",
+      "target_val": 5
+    }
+  },
+  {
+    "task_id": "t_097c4671",
+    "instruction": "List all orders across all pages and return the ID of the last order in the system.",
+    "expected": {
+      "type": "exact",
+      "target_val": "ord_105"
+    }
+  },
+  {
+    "task_id": "t_868b7984",
+    "instruction": "Retrieve invoice 'inv_502' using the provided API key 'secret_test_key' and return its total_cents.",
+    "expected": {
+      "type": "exact",
+      "target_val": "12500"
+    }
+  },
+  {
+    "task_id": "t_9d9c0000",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_a5e27e91",
+    "instruction": "Create a new user named 'Frank Miller' with email 'frank@example.com' and ID 'u6'. Return the created customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u6"
+    }
+  },
+  {
+    "task_id": "t_4a8c4a23",
+    "instruction": "Find all users with role 'admin' and return their customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u1"
+    }
+  },
+  {
+    "task_id": "t_0312e78b",
+    "instruction": "Find all orders with status 'completed' and return how many orders were found.",
+    "expected": {
+      "type": "count",
+      "target_val": 3
+    }
+  },
+  {
+    "task_id": "t_b81bf67c",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_b72f163a",
+    "instruction": "List all orders across all pages and return the ID of the last order in the system.",
+    "expected": {
+      "type": "exact",
+      "target_val": "ord_105"
+    }
+  },
+  {
+    "task_id": "t_455e5302",
+    "instruction": "Retrieve invoice 'inv_502' using the provided API key 'secret_test_key' and return its total_cents.",
+    "expected": {
+      "type": "exact",
+      "target_val": "12500"
+    }
+  },
+  {
+    "task_id": "t_2497f42e",
+    "instruction": "Create a new order for customer 'u1' with total amount of 50.00 dollars on date '2024-05-10'. Return the new order ID.",
+    "expected": {
+      "type": "contains",
+      "target_val": "ord_"
+    }
+  },
+  {
+    "task_id": "t_d733f1ad",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_c568e74d",
+    "instruction": "Find all users with role 'admin' and return their customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u1"
+    }
+  },
+  {
+    "task_id": "t_8ee8765c",
+    "instruction": "Find all orders with status 'completed' and return how many orders were found.",
+    "expected": {
+      "type": "count",
+      "target_val": 3
+    }
+  },
+  {
+    "task_id": "t_ffa969f9",
+    "instruction": "List all users and report the total count of users across all pages.",
+    "expected": {
+      "type": "count",
+      "target_val": 5
+    }
+  },
+  {
+    "task_id": "t_09c4d654",
+    "instruction": "Fetch user details for ID 'u1' and return their email address.",
+    "expected": {
+      "type": "exact",
+      "target_val": "alice@example.com"
+    }
+  },
+  {
+    "task_id": "t_190195e3",
+    "instruction": "Retrieve invoice 'inv_502' using the provided API key 'secret_test_key' and return its total_cents.",
+    "expected": {
+      "type": "exact",
+      "target_val": "12500"
+    }
+  },
+  {
+    "task_id": "t_e579d6a8",
+    "instruction": "Create a new order for customer 'u1' with total amount of 50.00 dollars on date '2024-05-10'. Return the new order ID.",
+    "expected": {
+      "type": "contains",
+      "target_val": "ord_"
+    }
+  },
+  {
+    "task_id": "t_f68b219d",
+    "instruction": "Create a new user named 'Frank Miller' with email 'frank@example.com' and ID 'u6'. Return the created customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u6"
+    }
+  }
+]

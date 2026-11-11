@@ -1,0 +1,8 @@
+# Phoenix tracing/dataset/experiment APIs verified against the current Phoenix
+# client docs (3.7.0) and installed versions. Keep these exact for reproducible runs.
+arize-phoenix==21.0.0
+arize-phoenix-client==3.7.0
+arize-phoenix-otel==0.17.3
+opentelemetry-api==1.45.2
+opentelemetry-sdk==1.45.2
+opentelemetry-exporter-otlp-proto-http==1.45.2

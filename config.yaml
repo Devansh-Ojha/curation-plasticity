@@ -1,0 +1,65 @@
+# Provider Configuration (OpenAI Compatible - NVIDIA API)
+API_BASE_URL: "https://integrate.api.nvidia.com/v1"
+API_KEY_ENV_VAR: "NVIDIA_API_KEY"
+
+# Locked Models
+ACTOR:
+  provider: "openai_compatible"
+  model_id: "nvidia/nemotron-3.5-bolt-e4b"
+  pricing:
+    input_per_1m: 0.15
+    output_per_1m: 0.60
+    thinking_per_1m: 0.60
+
+OPTIMIZER:
+  provider: "openai_compatible"
+  model_id: "meta/llama-3.2-90b-vision-instruct"
+  pricing:
+    input_per_1m: 0.80
+    output_per_1m: 2.40
+    thinking_per_1m: 2.40
+
+# Reference Pricing Table (hypothetical pricing)
+REFERENCE_PRICE_TABLE:
+  "minimaxai/minimax-m3.1-flash":
+    input_per_1m: 0.15
+    output_per_1m: 0.60
+    thinking_per_1m: 0.60
+  "nvidia/nemotron-3.5-bolt-e4b":
+    input_per_1m: 0.15
+    output_per_1m: 0.60
+    thinking_per_1m: 0.60
+  "poolside/laguna-xs-2.1":
+    input_per_1m: 0.15
+    output_per_1m: 0.60
+    thinking_per_1m: 0.60
+  "meta/llama-3.2-90b-vision-instruct":
+    input_per_1m: 0.80
+    output_per_1m: 2.40
+    thinking_per_1m: 2.40
+
+# Uniform hypothetical rate used only to enforce the comparison script's
+# MAX_USD guard for model IDs discovered dynamically from /v1/models.
+CANDIDATE_COMPARISON_PRICING:
+  input_per_1m: 0.80
+  output_per_1m: 2.40
+  thinking_per_1m: 2.40
+
+# Rate Limiting & Safety
+ACTOR_THROTTLE_SECONDS: 1.7
+RATE_LIMIT_RPM: 35
+MODEL_THROTTLE_SECONDS:
+  "minimaxai/minimax-m3.1-flash": 8.0
+  "nvidia/nemotron-3.5-bolt-e4b": 1.7
+  "meta/llama-3.2-90b-vision-instruct": 1.7
+MAX_429_RETRIES: 2
+REFLECTOR_READ_TIMEOUT_SECONDS: 60
+MAX_JSON_RETRIES: 2
+MAX_USD: 1.00 # Hard cap: execution stops immediately if hit
+
+# Smoke Test Parameters
+NOISE_FRAC: 0.20
+SEEDS: [42]
+EPOCHS: 2
+BATCH_SIZE: 5
+MAX_STEPS_PER_EPISODE: 12

@@ -1,0 +1,162 @@
+[
+  {
+    "task_id": "t_e5d06ce5",
+    "instruction": "List all users and report the total count of users across all pages.",
+    "expected": {
+      "type": "count",
+      "target_val": 5
+    }
+  },
+  {
+    "task_id": "t_8fe760ac",
+    "instruction": "List all orders across all pages and return the ID of the last order in the system.",
+    "expected": {
+      "type": "exact",
+      "target_val": "ord_105"
+    }
+  },
+  {
+    "task_id": "t_b47cab65",
+    "instruction": "Retrieve invoice 'inv_502' using the provided API key 'secret_test_key' and return its total_cents.",
+    "expected": {
+      "type": "exact",
+      "target_val": "12500"
+    }
+  },
+  {
+    "task_id": "t_80fe683f",
+    "instruction": "Create a new order for customer 'u1' with total amount of 50.00 dollars on date '2024-05-10'. Return the new order ID.",
+    "expected": {
+      "type": "contains",
+      "target_val": "ord_"
+    }
+  },
+  {
+    "task_id": "t_5061eb00",
+    "instruction": "Create a new user named 'Frank Miller' with email 'frank@example.com' and ID 'u6'. Return the created customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u6"
+    }
+  },
+  {
+    "task_id": "t_e295ea16",
+    "instruction": "Find all users with role 'admin' and return their customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u1"
+    }
+  },
+  {
+    "task_id": "t_1e34c831",
+    "instruction": "Find all orders with status 'completed' and return how many orders were found.",
+    "expected": {
+      "type": "count",
+      "target_val": 3
+    }
+  },
+  {
+    "task_id": "t_be5409d2",
+    "instruction": "List all users and report the total count of users across all pages.",
+    "expected": {
+      "type": "count",
+      "target_val": 5
+    }
+  },
+  {
+    "task_id": "t_4d2cda29",
+    "instruction": "List all orders across all pages and return the ID of the last order in the system.",
+    "expected": {
+      "type": "exact",
+      "target_val": "ord_105"
+    }
+  },
+  {
+    "task_id": "t_d57e22f7",
+    "instruction": "Retrieve invoice 'inv_502' using the provided API key 'secret_test_key' and return its total_cents.",
+    "expected": {
+      "type": "exact",
+      "target_val": "12500"
+    }
+  },
+  {
+    "task_id": "t_c17e7ee1",
+    "instruction": "Create a new order for customer 'u1' with total amount of 50.00 dollars on date '2024-05-10'. Return the new order ID.",
+    "expected": {
+      "type": "contains",
+      "target_val": "ord_"
+    }
+  },
+  {
+    "task_id": "t_68931747",
+    "instruction": "Create a new user named 'Frank Miller' with email 'frank@example.com' and ID 'u6'. Return the created customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u6"
+    }
+  },
+  {
+    "task_id": "t_a7eee532",
+    "instruction": "Find all users with role 'admin' and return their customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u1"
+    }
+  },
+  {
+    "task_id": "t_4e911f8d",
+    "instruction": "Find all orders with status 'completed' and return how many orders were found.",
+    "expected": {
+      "type": "count",
+      "target_val": 3
+    }
+  },
+  {
+    "task_id": "t_44ade865",
+    "instruction": "List all users and report the total count of users across all pages.",
+    "expected": {
+      "type": "count",
+      "target_val": 5
+    }
+  },
+  {
+    "task_id": "t_938900ef",
+    "instruction": "List all orders across all pages and return the ID of the last order in the system.",
+    "expected": {
+      "type": "exact",
+      "target_val": "ord_105"
+    }
+  },
+  {
+    "task_id": "t_df84695b",
+    "instruction": "Retrieve invoice 'inv_502' using the provided API key 'secret_test_key' and return its total_cents.",
+    "expected": {
+      "type": "exact",
+      "target_val": "12500"
+    }
+  },
+  {
+    "task_id": "t_4c64618c",
+    "instruction": "Create a new order for customer 'u1' with total amount of 50.00 dollars on date '2024-05-10'. Return the new order ID.",
+    "expected": {
+      "type": "contains",
+      "target_val": "ord_"
+    }
+  },
+  {
+    "task_id": "t_3b696c3d",
+    "instruction": "Create a new user named 'Frank Miller' with email 'frank@example.com' and ID 'u6'. Return the created customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u6"
+    }
+  },
+  {
+    "task_id": "t_4d740c51",
+    "instruction": "Find all users with role 'admin' and return their customer_id.",
+    "expected": {
+      "type": "exact",
+      "target_val": "u1"
+    }
+  }
+]
