@@ -1,202 +1,66 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Learning from Experience Without Learning from Noise</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Can Agents Learn from Failure Without Learning the Wrong Lesson?</title>
 <style>
-  @page { size: Letter; margin: 0; }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: #e9edf3; color: #19263b; font: 10.5pt/1.48 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }
-  .page { position: relative; width: 8.5in; height: 11in; padding: .62in .68in .66in; margin: 0 auto; overflow: hidden; background: #fbfcfe; page-break-after: always; }
-  .page:last-child { page-break-after: auto; }
-  .cover { color: #f7fbff; background: #14233b; padding-top: .76in; }
-  .cover:before { content: ""; position: absolute; width: 5.8in; height: 5.8in; border-radius: 50%; right: -2.15in; top: -.85in; background: radial-gradient(circle, rgba(35,185,165,.52), rgba(35,185,165,0) 70%); }
-  .cover:after { content: ""; position: absolute; width: 4.6in; height: 4.6in; border-radius: 50%; right: .7in; bottom: -2.85in; background: radial-gradient(circle, rgba(255,114,94,.38), rgba(255,114,94,0) 72%); }
-  .cover-content { position: relative; z-index: 1; }
-  .eyebrow { font-size: 8pt; font-weight: 750; letter-spacing: .16em; text-transform: uppercase; color: #51d6c1; }
-  h1 { max-width: 6.65in; margin: .48in 0 .23in; font-size: 34pt; line-height: 1.08; letter-spacing: -.035em; }
-  .subtitle { max-width: 6.2in; color: #d3deec; font-size: 15pt; line-height: 1.42; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: .42in; }
-  .chip { border: 1px solid rgba(255,255,255,.24); border-radius: 99px; padding: 7px 12px; color: #eaf4fb; font-size: 8.5pt; }
-  .cover-callout { position: absolute; left: .68in; right: .68in; bottom: 1.06in; z-index: 1; padding: .25in .29in; border-left: 4px solid #ff806b; border-radius: 8px; background: rgba(255,255,255,.08); color: #edf5fb; font-size: 12pt; }
-  .cover-foot { position: absolute; z-index: 1; left: .68in; bottom: .44in; color: #afbed1; font-size: 8pt; }
-  .topline { display: flex; justify-content: space-between; align-items: center; margin-bottom: .28in; color: #62718a; font-size: 8pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-  .topline b { color: #1caa99; }
-  h2 { margin: 0 0 .13in; color: #17263e; font-size: 23pt; line-height: 1.12; letter-spacing: -.025em; }
-  h3 { margin: 0 0 .08in; color: #1b2a42; font-size: 12pt; line-height: 1.25; }
-  p { margin: 0 0 .13in; }
-  .lede { color: #53627a; font-size: 12pt; line-height: 1.48; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .16in; }
-  .card { padding: .18in .2in; border: 1px solid #dce4ed; border-radius: 10px; background: white; }
-  .paper { border-top: 4px solid #26b8a4; }
-  .paper.orange { border-top-color: #ff806b; }
-  .small { color: #65748a; font-size: 8.5pt; }
-  .label { display: inline-block; margin-bottom: .08in; color: #1eaa99; font-size: 7.5pt; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-  .section { margin-top: .22in; }
-  .quote { margin: .17in 0; padding: .16in .2in; border-radius: 8px; background: #edf7f6; color: #214b50; font-weight: 650; }
-  .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: .1in; margin: .2in 0 .22in; }
-  .step { min-height: 1in; padding: .13in; border-radius: 9px; background: #172943; color: #f6fbff; }
-  .step i { display: block; margin-bottom: .06in; color: #53d2bd; font-size: 8pt; font-style: normal; font-weight: 800; }
-  .step b { display: block; margin-bottom: .04in; font-size: 9.5pt; }
-  .step span { color: #c4d1df; font-size: 8pt; line-height: 1.35; }
-  table { width: 100%; border-collapse: collapse; margin-top: .1in; font-size: 8.7pt; }
-  th { padding: 8px 9px; background: #172943; color: white; text-align: left; }
-  td { padding: 8px 9px; border-bottom: 1px solid #e1e7ee; vertical-align: top; }
-  tr:nth-child(even) td { background: #f3f6f9; }
-  .metric-row { display: grid; grid-template-columns: repeat(3,1fr); gap: .12in; margin: .16in 0; }
-  .metric { padding: .14in .16in; border-radius: 9px; background: #172943; color: white; }
-  .metric strong { display: block; color: #5bdbc6; font-size: 22pt; line-height: 1.05; }
-  .metric span { display: block; margin-top: 4px; color: #d0dae5; font-size: 8pt; }
-  .chart { margin: .14in 0 .12in; padding: .12in .15in .06in; border: 1px solid #dce4ed; border-radius: 10px; background: #fff; }
-  .chart svg { display: block; width: 100%; height: 1.55in; }
-  .caution { padding: .13in .17in; border-left: 4px solid #ff806b; border-radius: 7px; background: #fff2ef; color: #613c3a; }
-  .next { padding: .18in .2in; border-radius: 10px; background: #eaf7f5; }
-  .code { margin: .1in 0 .16in; padding: .13in .16in; border-radius: 8px; background: #172943; color: #f4f8fc; font: 9pt/1.5 Menlo, Consolas, monospace; }
-  .refs { margin-top: .12in; color: #617087; font-size: 8pt; }
-  a { color: #087f78; text-decoration: none; }
-  .footer { position: absolute; left: .68in; right: .68in; bottom: .28in; display: flex; justify-content: space-between; color: #7b8798; font-size: 7.5pt; }
-  .cover .footer { color: #9fadc0; }
-  ul { margin: .07in 0 .12in; padding-left: .2in; }
-  li { margin: 0 0 .055in; }
-  .two-col { display: grid; grid-template-columns: 1.12fr .88fr; gap: .2in; }
-  .mini { font-size: 8.5pt; color: #57667d; }
-  @media screen { .page { margin: 18px auto; box-shadow: 0 8px 30px rgba(25,38,59,.13); } }
-</style>
-</head>
-<body>
-<section class="page cover">
-  <div class="cover-content">
-    <div class="eyebrow">A field note on self-improving agents · November 2026</div>
-    <h1>When agents learn from failure, how do we keep them from learning the wrong lesson?</h1>
-    <p class="subtitle">A controlled API-agent study of noisy feedback, grounded reflection, and the cost of getting better.</p>
-    <div class="chips"><span class="chip">20-task training pool</span><span class="chip">40 held-out tasks</span><span class="chip">Trace-grounded rules</span><span class="chip">A0 · A0-raw · A3</span></div>
-  </div>
-  <div class="cover-callout"><b>The core challenge:</b> a failed request is evidence that something went wrong. It is not automatically evidence that the agent's instructions need a new rule.</div>
-  <div class="cover-foot">Curation Plasticity · Project brief · Preliminary run results are clearly marked inside</div>
-  <div class="footer"><span>Inspired by current work on agent plasticity and curated prompt optimization</span><span>01</span></div>
-</section>
+:root{color-scheme:light;--ink:#202832;--muted:#65717d;--rule:#d9dee3;--link:#315b70}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:17px/1.68 Georgia,"Times New Roman",serif}
+main{max-width:760px;margin:0 auto;padding:56px 28px 72px}.kicker,.meta,.caption,.small,table,figcaption,.sources{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.kicker{margin:0 0 16px;color:var(--muted);font-size:12px;font-weight:650;letter-spacing:.095em;text-transform:uppercase}
+h1{margin:0 0 18px;font-size:clamp(36px,7vw,54px);font-weight:500;line-height:1.09;letter-spacing:-.035em}
+.dek{margin:0 0 18px;color:#4e5963;font-size:21px;line-height:1.45}.meta{margin:0 0 32px;color:var(--muted);font-size:13px}
+hr{height:1px;margin:0 0 34px;border:0;background:var(--rule)}h2{margin:42px 0 12px;font-size:28px;font-weight:500;line-height:1.2;letter-spacing:-.02em}
+h3{margin:25px 0 6px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:16px;line-height:1.4}p{margin:0 0 17px}
+a{color:var(--link);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+blockquote{margin:28px 0;padding:4px 0 4px 20px;border-left:2px solid #8997a1;color:#46525d;font-size:20px;line-height:1.5}
+.paper-note{margin:20px 0 26px;padding-bottom:18px;border-bottom:1px solid var(--rule)}.paper-note:last-child{border-bottom:0}.paper-note h3{margin-top:0}
+table{width:100%;margin:20px 0 24px;border-collapse:collapse;font-size:14px;line-height:1.5}th{padding:10px 12px 10px 0;border-bottom:2px solid #77838e;text-align:left;font-weight:650}
+td{padding:11px 12px 11px 0;border-bottom:1px solid var(--rule);vertical-align:top}figure{margin:26px 0 24px}figure img{display:block;width:100%;height:auto}
+figcaption{margin-top:9px;color:var(--muted);font-size:13px;line-height:1.5}.callout{margin:24px 0;padding:15px 18px;border:1px solid var(--rule);color:#46525d;font-size:15px}
+ul,ol{padding-left:24px}li{margin-bottom:8px}pre{overflow:auto;margin:14px 0 20px;padding:14px 16px;background:#f3f5f6;color:#26323b;font:13px/1.6 Menlo,Consolas,monospace}
+.sources{padding-top:18px;border-top:1px solid var(--rule);color:var(--muted);font-size:13px;line-height:1.6}
+@media(max-width:560px){main{padding:36px 20px 52px}body{font-size:16px}.dek{font-size:19px}table{font-size:12px}}
+</style></head>
+<body><main>
+<header><p class="kicker">Curation Plasticity · Research note</p>
+<h1>Can agents learn from failure without learning the wrong lesson?</h1>
+<p class="dek">A small API-agent study asks whether trace-grounded reflection and task curation can make self-improvement more reliable—and whether that reliability transfers to held-out work.</p>
+<p class="meta">Project update · November 11, 2026 · Preliminary results; experiment in progress</p></header>
+<hr>
+<p>A failed request looks like feedback. But what does it tell the agent? Maybe a required header is missing. Maybe the task is impossible, the environment is flaky, or the evaluator is wrong. If a Reflector treats every failure as a prompt defect, it can turn noise into a permanent rule.</p>
+<blockquote>The challenge is not just to help an agent learn from experience. It is to decide which experience is safe to learn from.</blockquote>
 
-<section class="page">
-  <div class="topline"><span><b>01</b> · The research context</span><span>Why the question matters</span></div>
-  <h2>Two papers point to the same gap</h2>
-  <p class="lede">Agents can improve by turning experience into persistent prompts, memories, or playbooks. The hard part is deciding which experiences deserve to change what the agent does next.</p>
-  <div class="grid2 section">
-    <article class="card paper">
-      <span class="label">Measure learning, not just ability</span>
-      <h3>Agent Plasticity</h3>
-      <p>Singh and colleagues argue that an agent should be evaluated on how well it improves on future held-out tasks, how efficiently it learns, and where the improvement loop breaks down. A high final score and an efficient learner are not necessarily the same thing.</p>
-      <p class="small"><a href="https://arxiv.org/abs/2610.08902">Read the paper · arXiv:2610.08902</a></p>
-    </article>
-    <article class="card paper orange">
-      <span class="label">Curate the learning signal</span>
-      <h3>GEPA-Curator</h3>
-      <p>Yu and colleagues focus on the possibility that a failure comes from the task, harness, tools, environment, or judge rather than the prompt. Their Curator selects which experiences should inform optimization and can retrieve a prior successful trajectory as evidence.</p>
-      <p class="small"><a href="https://arxiv.org/abs/2610.37651">Read the paper · arXiv:2610.37651</a></p>
-    </article>
-  </div>
-  <div class="section">
-    <span class="label">The project’s target</span>
-    <h3>Noise can become a persistent instruction</h3>
-    <p>In this repository, an agent works through a synthetic REST API. It may receive an error because it omitted a required header, sent a bad field, hit an impossible task, or encountered unreliable feedback. A Reflector that generalizes from the error without enough evidence can add a harmful playbook rule. That rule then affects later tasks.</p>
-    <div class="quote">Our question: can trace evidence and task curation make the learning loop more reliable—and do any gains transfer to held-out tasks for a reasonable cost?</div>
-    <p class="small">This is an inspired, small-scale testbed, not a reproduction of either paper’s benchmarks or headline results.</p>
-  </div>
-  <div class="footer"><span>Curation Plasticity · Background and motivation</span><span>02</span></div>
-</section>
+<h2>What the papers contribute</h2>
+<div class="paper-note"><h3><a href="https://arxiv.org/abs/2610.08902">Agent Plasticity: Measuring Self-Improvement Through Experience</a></h3>
+<p>Singh and colleagues argue that agent evaluations should measure how much performance improves on future held-out tasks, how efficiently the agent learns, and where the improvement process breaks. Their framing separates final capability from learning efficiency and asks whether gains transfer beyond the tasks that produced them.</p></div>
+<div class="paper-note"><h3><a href="https://arxiv.org/abs/2610.37651">GEPA-Curator: Curated Learning for Self Improving Agents</a></h3>
+<p>Yu and colleagues focus on the quality of experiences that reach a prompt optimizer. Their Curator filters tasks likely to provide unreliable signals and can retrieve a prior successful trajectory. The motivation is that a failure may come from the prompt, task, tools, harness, environment, or judge.</p></div>
+<p>This project borrows those questions, but uses a smaller synthetic REST API rather than reproducing either paper’s benchmarks. The aim is to make the failure-to-rule step easy to inspect.</p>
 
-<section class="page">
-  <div class="topline"><span><b>02</b> · What we built</span><span>From trace to playbook</span></div>
-  <h2>Make the evidence visible before changing the agent</h2>
-  <p class="lede">The system turns one episode into a reviewable update proposal, then checks the proposal before it becomes persistent behavior.</p>
-  <div class="steps">
-    <div class="step"><i>01 · ACT</i><b>Run a task</b><span>The actor calls tools in the mock REST API.</span></div>
-    <div class="step"><i>02 · TRACE</i><b>Capture evidence</b><span>Keep the failed request, error body, and later success if observed.</span></div>
-    <div class="step"><i>03 · REFLECT</i><b>Propose a rule</b><span>The Reflector explains what to change and why.</span></div>
-    <div class="step"><i>04 · CHECK</i><b>Ground, then gate</b><span>Validate evidence; test grounded candidates on the batch.</span></div>
-  </div>
-  <h3>Three arms isolate the changes</h3>
-  <table>
-    <thead><tr><th>Arm</th><th>What changes</th><th>What it tells us</th></tr></thead>
-    <tbody>
-      <tr><td><b>A0</b></td><td>Grounding check plus batch gate.</td><td>Baseline for evidence-constrained reflection.</td></tr>
-      <tr><td><b>A0-raw</b></td><td>Same Reflector prompt and gate; no grounding validator.</td><td>Whether grounding helps beyond aggregate gating.</td></tr>
-      <tr><td><b>A3</b></td><td>Curator can defer tasks and supply relevant prior successes; grounding and gate remain.</td><td>Whether selecting experiences adds value.</td></tr>
-    </tbody>
-  </table>
-  <div class="section two-col">
-    <div><h3>Grounding and gate checks</h3><p class="mini">A rule must cite a supplied request/error pair and name a supported header, parameter, or field. A proposed value needs trace support unless the error itself names a missing header. Explicit rules that forbid fields used successfully are rejected. Only grounded proposals reach the gate.</p></div>
-    <div><h3>Important limit</h3><p class="mini">The gate compares aggregate training-batch scores. It can accept a candidate while one task regresses, and it cannot promise a held-out gain. Held-out evaluation is kept separate for that reason.</p></div>
-  </div>
-  <div class="footer"><span>Curation Plasticity · Method</span><span>03</span></div>
-</section>
+<h2>What we are testing</h2>
+<p>The agent completes API tasks and carries a playbook of learned rules between epochs. The task pool mixes learnable requests with easy controls and planted noise, including impossible requests and unreliable feedback. On a failure, the Reflector receives the failed request, error body, and any successful request observed afterward.</p>
+<p>A deterministic validator checks that a proposed rule is tied to those traces: it must name a supported header, parameter, or field; unsupported values need successful-trace evidence; and explicit instructions that forbid fields used by successful requests are rejected. Only grounded rules reach the gate. The gate compares aggregate scores on the training batch, so it can still accept a candidate that regresses one task.</p>
+<table><thead><tr><th>Arm</th><th>Comparison</th></tr></thead><tbody>
+<tr><td><b>A0</b></td><td>Grounding check, then batch gate.</td></tr>
+<tr><td><b>A0-raw</b></td><td>Same Reflector prompt and gate, without grounding validation.</td></tr>
+<tr><td><b>A3</b></td><td>Curator can defer noisy or well-understood tasks and provide a relevant prior success; grounding and gate remain.</td></tr>
+</tbody></table>
 
-<section class="page">
-  <div class="topline"><span><b>03</b> · First results</span><span>One incomplete run · seed 42</span></div>
-  <h2>A useful warning, not a verdict</h2>
-  <p class="lede">The saved A0 checkpoint is incomplete. Its held-out score is lower at epoch 4 than at baseline; a newer attempt has now stopped in epoch 6 on repeated HTTP 429 errors.</p>
-  <div class="chart">
-    <div class="small"><b>Held-out ID success · A0, seed 42</b> · same set of 40 tasks</div>
-    <svg viewBox="0 0 560 150" role="img" aria-label="Epoch 0 held-out success 60 percent, epoch 4 55 percent">
-      <line x1="88" y1="126" x2="526" y2="126" stroke="#d8e0e9" stroke-width="1"/>
-      <line x1="88" y1="31" x2="88" y2="126" stroke="#d8e0e9" stroke-width="1"/>
-      <text x="28" y="37" font-size="10" fill="#77859a">100%</text><text x="43" y="80" font-size="10" fill="#77859a">50%</text><text x="57" y="129" font-size="10" fill="#77859a">0%</text>
-      <rect x="168" y="69" width="94" height="57" rx="7" fill="#1db59f"/><text x="191" y="61" font-size="15" font-weight="700" fill="#1d334d">60%</text><text x="198" y="143" font-size="11" fill="#62718a">Epoch 0</text>
-      <rect x="344" y="74" width="94" height="52" rx="7" fill="#ff806b"/><text x="367" y="66" font-size="15" font-weight="700" fill="#1d334d">55%</text><text x="374" y="143" font-size="11" fill="#62718a">Epoch 4</text>
-      <text x="464" y="91" font-size="11" font-weight="700" fill="#8e514b">−5 pp</text>
-    </svg>
-  </div>
-  <div class="metric-row">
-    <div class="metric"><strong>5 / 8</strong><span>epochs saved so far</span></div>
-    <div class="metric"><strong>0</strong><span>rules in the saved epoch-5 playbook</span></div>
-    <div class="metric"><strong>$0.111</strong><span>hypothetical tracked cost to epoch 5</span></div>
-  </div>
-  <div class="two-col">
-    <div class="card">
-      <h3>What the run log says</h3>
-      <ul class="mini">
-        <li>Epoch-0 held-out: 24/40; epoch-4: 22/40.</li>
-        <li>Training batches passed 7/10, 5/10, 5/10, 6/10, then 9/10 across epochs 1–5.</li>
-        <li>At the last local log snapshot: 1,197 successful call records and 643 HTTP 429 retry events, followed by another reported 429 failure in epoch 6.</li>
-      </ul>
-    </div>
-    <div class="caution">
-      <h3>How to read this</h3>
-      <p class="mini">The saved checkpoint remains at epoch 5. The epoch-6 attempt exhausted three whole-episode retries and was not scored. This is one seed; the 5-point difference does not establish that A0 harms performance or that grounding caused the change.</p>
-    </div>
-  </div>
-  <p class="refs">Snapshot from local `seed-42-A0-full` results and call logs, read 11 Nov 2026; the epoch-6 error is from the subsequent console output. Cost is hypothetical reference pricing, not provider billing. Log counts can grow as a resumed run continues.</p>
-  <div class="footer"><span>Curation Plasticity · Preliminary evidence only</span><span>04</span></div>
-</section>
+<h2>What the first run says so far</h2>
+<p>The saved A0 seed-42 checkpoint is at epoch 5 of 8. On the same 40 held-out tasks, success was 24/40 (60%) at epoch 0 and 22/40 (55%) at epoch 4.</p>
+<figure><img src="assets/heldout-success-a0-seed42.png" alt="Held-out task success was 60 percent at epoch zero and 55 percent at epoch four.">
+<figcaption>Held-out ID success for one A0 seed. Epoch 8 has not yet been evaluated; this is a partial run, not a final comparison.</figcaption></figure>
+<p>Training-batch success varied across epochs: 7/10, 5/10, 5/10, 6/10, and 9/10. The saved epoch-5 playbook contains zero rules. Tracked hypothetical cost is about $0.111; it is a configured reference-cost estimate, not an invoice.</p>
+<div class="callout"><b>Why this is preliminary:</b> a later attempt stopped during epoch 6 after repeated HTTP 429 rate-limit errors, following three whole-episode attempts. The failed episode was not scored as a task failure. This is one seed, and the full held-out schedule is unfinished. The 5-point difference cannot show that A0 harms performance or identify what caused the change.</div>
 
-<section class="page">
-  <div class="topline"><span><b>04</b> · What comes next</span><span>Finish the comparison</span></div>
-  <h2>One run can show where to look next</h2>
-  <p class="lede">The current result points to two practical questions: can the run finish reliably under provider rate limits, and do grounded or curated updates improve held-out results across seeds?</p>
-  <div class="next section">
-    <h3>Completion plan</h3>
-    <ol>
-      <li>Resume A0 seed 42 to epoch 8 and evaluate at epoch 8.</li>
-      <li>Run the matched A0 seed 43, A0-raw seeds 42 and 43, and A3 seeds 42 and 43.</li>
-      <li>Compare held-out success at epochs 0, 4, and 8; include costs, rules, grounding/gate rejections, regressions, and 429 counts.</li>
-      <li>Report seed-level outcomes and uncertainty. Do not collapse an incomplete run or a two-seed result into a broad causal claim.</li>
-    </ol>
-  </div>
-  <h3 class="section">Try the short run</h3>
-  <p class="mini">Install the project dependencies, start local Phoenix, set `NVIDIA_API_KEY`, then run from the repository root:</p>
-  <div class="code">python run_real_experiment.py --arm A0 --seed 42 --epochs 3 --eval-epochs 0,3 --run-tag demo</div>
-  <p class="mini">Use `--run-tag` for a fresh output folder; reuse the same tag to resume. Hosted runs make real model calls. The offline test suite does not.</p>
-  <div class="section card">
-    <span class="label">The takeaway so far</span>
-    <p><b>Reflection needs evidence, and evidence needs evaluation.</b> Grounding can constrain what a Reflector is allowed to generalize; curation can decide which failures deserve attention. Whether either approach improves learning efficiency is still an empirical question for the completed multi-seed comparison.</p>
-  </div>
-  <div class="refs">
-    <b>Sources</b><br>
-    Singh et al., <a href="https://arxiv.org/abs/2610.08902">Agent Plasticity: Measuring Self-Improvement Through Experience</a>.<br>
-    Yu et al., <a href="https://arxiv.org/abs/2610.37651">GEPA-Curator: Curated Learning for Self Improving Agents</a>.<br>
-    Style reference: <a href="https://arize.com/blog/does-being-rude-to-ai-work/">Arize, “Does Being Rude to AI Work?”</a>. This brief uses an original narrative and design.
-  </div>
-  <div class="footer"><span>Curation Plasticity · Project brief</span><span>05</span></div>
-</section>
-</body>
-</html>
+<h2>What comes next</h2>
+<p>Finish the eight-epoch runs and compare A0, A0-raw, and A3 on matched seeds and held-out checkpoints. Report held-out success alongside costs, accepted rules, grounding/gate rejections, regressions, and API retry counts. The useful comparison is whether grounding and curation improve held-out learning after cost—not whether one short run happens to end higher.</p>
+<p>To reproduce a short hosted run, start Phoenix locally, set <code>NVIDIA_API_KEY</code>, and run from the repository root:</p>
+<pre>python run_real_experiment.py --arm A0 --seed 42 --epochs 3 --eval-epochs 0,3 --run-tag demo</pre>
+<p class="small">Hosted runs make real model calls and may incur provider charges. The offline test suite does not make model calls. Reuse the same run tag to resume; choose a new tag for a separate output folder.</p>
+
+<div class="sources"><b>Sources and format</b><br>
+<a href="https://arxiv.org/abs/2610.08902">Singh et al., Agent Plasticity</a> · <a href="https://arxiv.org/abs/2610.37651">Yu et al., GEPA-Curator</a> · <a href="https://arize.com/blog/does-being-rude-to-ai-work/">Arize blog post used as a style reference</a>.<br>
+Original wording and restrained editorial layout. The chart is generated with Matplotlib from saved run results.</div>
+</main></body></html>

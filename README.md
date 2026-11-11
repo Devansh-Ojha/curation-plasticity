@@ -2,7 +2,15 @@
 
 This project studies how a tool-using agent can turn past task attempts into reusable instructions without learning the wrong lesson from a misleading failure.
 
-**Project brief:** [Read the PDF](docs/learning-from-experience.pdf) or view its [HTML source](docs/learning-from-experience.html). The brief uses preliminary, incomplete run data and labels it accordingly.
+**Project story:** [Read the HTML article](docs/learning-from-experience.html). It uses preliminary, incomplete run data and labels it accordingly.
+
+To view it locally with the chart image, start a small web server from the repository root:
+
+```bash
+python3 -m http.server 8000 --directory docs
+```
+
+Then open `http://localhost:8000/learning-from-experience.html`. To refresh the Matplotlib chart from a saved run, use `python3 docs/generate_brief_chart.py` (or pass a different `--results` file).
 
 ## Research question
 
