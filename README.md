@@ -1,6 +1,6 @@
 # Learning from Experience Without Learning from Noise
 
-> **Read the project article:** [Does Curating What an Agent Learns Raise Plasticity per Dollar?](docs/learning-from-experience.html)
+> **Read the project article:** [Does Curating What an Agent Learns Raise Plasticity per Dollar?](https://devansh-ojha.github.io/curation-plasticity/learning-from-experience.html)
 
 This repository is a small experiment on helping API agents learn reusable instructions from past attempts. The article covers the research background, design, saved results, Arize Phoenix workflow, and limitations.
 
