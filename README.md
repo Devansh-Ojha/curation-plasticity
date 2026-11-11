@@ -1,138 +1,92 @@
-# Does Curating What an Agent Learns From Raise Plasticity per Dollar?
+# Learning from Experience Without Learning from Noise
 
-## Repository Layout
+This project studies how a tool-using agent can turn past task attempts into reusable instructions without learning the wrong lesson from a misleading failure.
 
-- `run_real_experiment.py` is the resumable hosted-model runner for A0, A0-raw, and A3.
-- `run_real_a3_smoke.py` contains shared prompt templates and call logging used by the real runner.
-- `scripts/analysis/` contains offline analysis and comparison tools.
-- `scripts/audit/` contains offline trace and grounding audits.
-- `scripts/legacy/` contains pilot, baseline, smoke, and earlier pipeline entry points.
-- `src/agents/`, `src/testbed/`, `src/loop/`, `src/analysis/`, and `src/obs/` contain the implementation modules.
-- `tests/` contains offline unit tests; `tests/fixtures/` holds small tracked test inputs.
-- `data/` contains the canonical task and label files. Generated `data_*` variants are local-only.
-- `checkpoints/`, `results/`, `outputs/`, and `logs/` are local generated artifacts and are excluded from Git.
+## Research question
 
-The ignore rules do not remove local artifacts. In particular, the active A0 run continues using its existing `outputs/` and `logs/` paths.
+When an agent fails at an API task, the cause may be a fixable weakness in its instructions—or a noisy task, unsupported request, transient environment problem, or bad evaluation signal. If a Reflector treats every failure as evidence about the instructions, its updates can hurt future tasks. We ask whether grounding reflection in request traces, and curating which failures reach the Reflector, improves held-out performance per unit of learning cost.
 
-Run supporting tools as modules from the repository root, for example:
+## Related papers
+
+- **[Agent Plasticity: Measuring Self-Improvement Through Experience](https://arxiv.org/abs/2610.08902)** argues that evaluations of self-improving agents should measure how performance changes on future held-out tasks as the agent learns, and account for the cost of that learning. The paper emphasizes that final capability and learning efficiency can differ, and that gains on training tasks may not fully transfer to held-out tasks.
+- **[GEPA-Curator: Curated Learning for Self Improving Agents](https://arxiv.org/abs/2610.37651)** studies two ways to improve reflective prompt optimization: filter experiences likely to provide unreliable learning signals, and retrieve a prior successful trajectory as evidence for the optimizer. Its motivation is that a failed rollout can reflect problems in the prompt, task, tools, environment, or judge.
+
+This repository is a small, controlled study inspired by those ideas; it is **not a reproduction** of either paper's benchmark or reported results.
+
+## What this project implements
+
+The environment is a synthetic REST-style API. Tasks ask an agent to read or change records through API calls. Some tasks are learnable, some are easy controls, and some contain planted noise such as impossible requests or unreliable feedback. The agent carries a playbook forward between training epochs.
+
+Work in this repository has focused on making that comparison inspectable and resumable: the harness records failed requests, error bodies, and later successful requests; validates Reflector rules against those traces; tracks which tasks contributed each playbook rule; and measures both aggregate gate outcomes and held-out performance. A0, A0-raw, and A3 share the actor and task environment so the effect of grounding and curation can be compared. Episodes run concurrently under one rate limiter; transient API failures trigger backoff and a whole-episode retry rather than a scored task failure.
+
+The main comparison is:
+
+| Arm | Behavior |
+|---|---|
+| `A0` | Reflect on failed tasks, validate proposed rules against request/error traces, then gate a candidate playbook on the current training batch. |
+| `A0-raw` | Use the same Reflector prompt and gate, but skip the grounding validator. |
+| `A3` | Add a Curator that can defer noisy or well-understood tasks and provide a relevant prior success to the Reflector. Grounding and gating still apply. |
+
+For grounded rules, the validator checks that quoted evidence comes from supplied traces and that the rule names a header, parameter, or field supported by the request or error. Proposed values and formats need trace support, unless the error directly names a missing header (which grounds the header requirement itself). It rejects explicit rules that forbid headers or fields used in supplied successful requests. A candidate rule must pass grounding before the gate runs. The gate compares aggregate scores on the training batch; passing it does not guarantee held-out improvement or prevent an individual task from regressing.
+
+The current hosted-run protocol uses a pool of 20 training tasks, batches of 10, 8 epochs, and 40 held-out in-distribution tasks evaluated at epochs 0, 4, and 8. The task generator plants 20% noise. These are defaults in `run_real_experiment.py`; command-line options can shorten a run or select evaluation epochs. Results include held-out success, playbook changes, grounding and gate outcomes, regressions, and per-phase hypothetical model cost.
+
+## Set up
+
+Use Python 3.10 or newer. From the repository root:
 
 ```bash
-python -m scripts.analysis.analyze_real_experiment
-python -m scripts.audit.audit_saved_reflector_proposals
-```
-
-The scripts under `scripts/legacy/` are retained for historical reproduction and are not part of the active hosted-run workflow.
-
-An empirical evaluation connecting **Agent Plasticity** (Singh et al., Meta / Berkeley / Princeton, arXiv:2610.08902) and **GEPA-Curator** (Yu et al., UC Berkeley / Keutzer Lab, arXiv:2610.37651), instrumented in **Arize Phoenix**.
-
----
-
-## 1. Executive Summary & Core Question
-
-> **Question:** Under planted production noise (impossible tasks, flaky judges, ambiguous specs), does Curator-style trace curation raise held-out gain per $1,000 once its own token overhead is counted?
-
-In real-world deployments, self-improving agents reflect on task failures to update persistent prompts or tool inventories. However, when failures stem from impossible endpoints or flaky tests, uncurated reflectors hallucinate toxic workaround rules that **pollute** the playbook and **regress** previously solved tasks. 
-
-This project implements a testbed to evaluate whether **trace curation** pays for itself in net **Agent Plasticity** (held-out gain per $1,000 learning spend).
-
----
-
-## 2. Experimental Architecture
-
-```
-                                  +-----------------------------+
-                                  |     Training Tasks (60)     |
-                                  | 15% Noise (Imp, Flaky, Amb) |
-                                  +--------------+--------------+
-                                                 |
-                                     [Minibatch Selector]
-                                                 |
-            +-------------------+----------------+-------------------+
-            |                   |                                    |
-     [A0: Uncurated]   [A2: Numeric Curriculum]            [A3: Trace Curator]
-            |                   |                                    |
-            v                   v                                    v
-     All Failures         Drop if s_t > b                   Trace Inspection:
-                                                       - Filter Impossible / Flaky
-                                                       - Pair Corroborated Anchor
-                                                                     |
-                               +-------------------------------------+
-                               v
-                  [Reflector: Propose Ops]
-                               |
-                   [Deterministic Provenance]
-             rule_id -> [source_failed_task_ids]
-                               |
-                    [GEPA-Style Gating Eval]
-                 Accept if Candidate Score >= Curr
-                               |
-                  [Arize Phoenix Tracing & Evals]
-```
-
-### The 4 Evaluated Arms
-1. **A0: Uncurated + Gating (Baseline):** Uniform random minibatches; reflects on all failures.
-2. **A1: Oracle (Upper-bound):** Reflects strictly on ground-truth `learnable` failures.
-3. **A2: Numeric Curriculum:** Outcome-history filter based on GEPA-Curator Algorithm 1 ($s_t \leftarrow s_t + 1$ on failure, $s_t \leftarrow \max(0, s_t - k)$ on success; dropped if $s_t > b$).
-4. **A3: Curator (Full):** Trace-reading LLM Curator evaluating failure evidence + contrastive anchor selection.
-
----
-
-## 3. Key Hypotheses & Experimental Findings
-
-| Hypothesis | Predicted Behavior | Observed Finding | Verdict |
-| :--- | :--- | :--- | :--- |
-| **H1: Uncurated Pollution** | Uncurated reflection admits harmful/polluted rules under aggregate minibatch gating. | **A0 suffered 35.6% rule pollution** (peaking at 50% in Seed 43), hallucinatory workaround rules created from impossible endpoints. | **Supported** |
-| **H2: Trace vs Numeric Curriculum** | Numeric curriculum fails to separate flaky from learnable tasks because both yield mixed outcomes. | **A2 had identical pollution (35.6%) to uncurated baseline**, as pass/fail counts cannot detect non-deterministic graders. | **Supported** |
-| **H3: Curation Cost Overhead** | Curation token cost consumes learning budget; at low-to-moderate noise, net plasticity may be lower unless noise is severe. | Curation added ~20–25% token cost ($0.149 vs $0.121 avg), resulting in raw plasticity of 156k vs 193k/$1k under 15% noise. | **Supported** |
-| **H4: Provenance Attribution** | Rule provenance enables 100% deterministic pollution auditing without an LLM judge. | Verified: 0% pollution for Oracle (A1), clean reduction in Curator (A3). | **Supported** |
-
----
-
-## 4. Benchmark Results Table (3 Seeds, 8 Epochs)
-
-| Arm | Held-out ID Gain | Total Learning Cost | Plasticity ($ / \$1,000) | Rule Pollution Rate | Strict Pollution Rate |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **A0: Uncurated** | +23.3 pp | $0.1209 | **193,027** | 35.6% | 5.6% |
-| **A1: Oracle** | +23.3 pp | $0.1172 | **199,007** | **0.0%** | **0.0%** |
-| **A2: Numeric Curriculum** | +23.3 pp | $0.1209 | **193,027** | 35.6% | 5.6% |
-| **A3: Curator (Full)** | +23.3 pp | $0.1496 | **156,278** | **28.9%** (down to 0% in s42) | 6.7% |
-
-*All learning costs include actor rollouts, curation evaluations, multi-attempt reflections, and GEPA-style gating re-runs.*
-
----
-
-## 5. Artifacts and Visualization
-
-Generated charts located in `results/figures/`:
-1. `heldout_id_curves.png`: Mean and 95% bootstrap CI curves across all checkpoints.
-2. `plasticity_frontier.png`: Trajectory of held-out capability gain versus cumulative dollar cost.
-3. `pollution_rate.png`: Deterministic playbook pollution comparison across arms.
-
----
-
-## 6. Arize Phoenix Integration
-
-### Observability & Spans
-* **Project Name:** `curation-plasticity`
-* **Span Hierarchy:**
-  * Root Span: `phase` (`select`, `act`, `curate`, `reflect`, `gate`, `eval`).
-  * Child Spans: `episode__{task_id}` recording tool execution, `read_playbook_called`, token usage, and cost attribution.
-* **Label Hygiene:** Ground truth categories are strictly segregated in `data/labels.json` and never passed into agent context or span attributes, preventing data leakage.
-
-### Launching Phoenix Locally
-```bash
-# Activate virtual environment
+git clone git@github.com:Devansh-Ojha/curation-plasticity.git
+cd curation-plasticity
+python3 -m venv .venv
 source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt -r requirements-phoenix.txt
+```
 
-# Launch Arize Phoenix UI
+Run the offline test suite. It does not make hosted-model calls:
+
+```bash
+python -m pytest -q
+```
+
+## Run an experiment
+
+Real runs require an NVIDIA API key and a local Phoenix server. Set the key in your shell; do not put it in `config.yaml` or commit it:
+
+```bash
+export NVIDIA_API_KEY="your-key"
 phoenix serve
 ```
-Open `http://localhost:6006` to inspect traces, spans, and experiment runs.
 
----
+Leave Phoenix running in one terminal. In another, activate the environment and start a short A0 run:
 
-## 7. Developer Learnings for Production Agents
+```bash
+python run_real_experiment.py --arm A0 --seed 42 --epochs 3 --eval-epochs 0,3 --run-tag demo
+```
 
-1. **The Flaky Outcome Blindspot:** Outcome-based curriculums (like Elo or pass/fail thresholds) cannot distinguish flaky evaluations from prompt-sensitive tasks. Trace inspection is required.
-2. **Deterministic Provenance > LLM-as-a-Judge:** Tracking which failure IDs inspired which rule in the artifact metadata creates a zero-cost, objective audit trail for knowledge pollution.
-3. **Curation Overhead Economics:** Trace curation introduces token spend. Teams should evaluate their specific noise prevalence: at low noise (<10%), curation overhead may compress plasticity per dollar; at high noise (>25%), it prevents catastrophic regressions.
+For the default 8-epoch protocol, run:
+
+```bash
+python run_real_experiment.py --arm A0 --seed 42 --run-tag a0-seed42
+```
+
+Use `--arm A0-raw` or `--arm A3` to run the other arms. Use seeds `42` or `43`. A new `--run-tag` creates separate local output/log folders and Phoenix experiment names; rerun with the **same** tag to resume that run. Without a tag, the runner uses the standard `seed-<seed>-<arm>` folder and resumes it if a checkpoint exists.
+
+Hosted calls use the actor and optimizer models in `config.yaml`, are subject to provider rate limits, and may incur provider charges. The logged cost and `$1` guard use configured **hypothetical reference pricing**; they are not a provider invoice or exact billing estimate.
+
+## Where files go
+
+- `outputs/real_experiment/seed-<seed>-<arm>-<tag>/` contains checkpoints, generated task data, and `results.json`.
+- `logs/real_experiment/seed-<seed>-<arm>-<tag>/calls.jsonl` contains call, retry, and error records. It does not contain the API key.
+- Phoenix traces and held-out evaluations are available at `http://localhost:6006` while the local Phoenix server is running.
+- `data/` contains the canonical synthetic task files. Ground-truth labels are kept separate from agent prompts.
+- `src/` contains the agents, testbed, learning loop, analysis, and observability code. Supporting commands are grouped under `scripts/analysis/`, `scripts/audit/`, and `scripts/legacy/`.
+
+Generated `outputs/`, `logs/`, `checkpoints/`, and `results/` are local artifacts and are excluded from Git. This keeps run data out of the source submission; it does not delete local results.
+
+## Interpreting results
+
+Compare held-out performance at the same checkpoints across arms and seeds, alongside learning cost, rule pollution, gate rejections, and regressions. The gate uses the training batch, so held-out results are the test of generalization. A short run or a single seed is exploratory evidence, not a reliable estimate of an arm's average effect. The repository does not claim final comparative findings until the planned runs are complete and analyzed.
+
+The implementation reports score gain per $1,000 of hypothetical learning cost and also retains raw held-out gain. When preparing a report, include the exact run settings, seed, evaluation checkpoint, and cost label with every result.
