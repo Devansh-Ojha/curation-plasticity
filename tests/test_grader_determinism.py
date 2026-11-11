@@ -27,7 +27,7 @@ def test_re_evaluating_same_checkpoint_twice_yields_identical_scores():
 
     actor = ActorAgent(model_name="mock-actor")
     grader = Grader(seed=42)
-    playbook_file = "checkpoints/A0_s42/checkpoint_0/playbook.md"
+    playbook_file = "tests/fixtures/playbooks/empty.md"
 
     # Evaluate run 1
     eval_1 = evaluate_checkpoint_on_split(playbook_file, heldout, labels, actor, grader)

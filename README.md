@@ -1,5 +1,17 @@
 # Does Curating What an Agent Learns From Raise Plasticity per Dollar?
 
+## Repository Layout
+
+- `run_real_experiment.py` is the resumable hosted-model runner for A0, A0-raw, and A3.
+- `run_real_a3_smoke.py` contains shared prompt templates and call logging used by the real runner.
+- The remaining root-level `run_*.py` files are supporting and earlier experiment entry points.
+- `src/agents/`, `src/testbed/`, `src/loop/`, `src/analysis/`, and `src/obs/` contain the implementation modules.
+- `tests/` contains offline unit tests; `tests/fixtures/` holds small tracked test inputs.
+- `data/` contains the canonical task and label files. Generated `data_*` variants are local-only.
+- `checkpoints/`, `results/`, `outputs/`, and `logs/` are local generated artifacts and are excluded from Git.
+
+The ignore rules do not remove local artifacts. In particular, the active A0 run continues using its existing `outputs/` and `logs/` paths.
+
 An empirical evaluation connecting **Agent Plasticity** (Singh et al., Meta / Berkeley / Princeton, arXiv:2610.08902) and **GEPA-Curator** (Yu et al., UC Berkeley / Keutzer Lab, arXiv:2610.37651), instrumented in **Arize Phoenix**.
 
 ---

@@ -9,9 +9,17 @@ logs/
 logs_old/
 outputs/
 
+# Local experiment artifacts; keep source data and reproducible test fixtures tracked
+checkpoints/
+results/
+
 # Generated task-suite variants; keep the canonical data/ directory tracked
 data_baseline/
 data_eval_*/
 data_leak_test/
 data_pilot/
 data_smoke_real/
+
+# Editor and operating-system files
+.DS_Store
+*.tmp
