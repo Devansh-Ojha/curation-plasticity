@@ -2,6 +2,8 @@
 
 This project studies how a tool-using agent can turn past task attempts into reusable instructions without learning the wrong lesson from a misleading failure.
 
+**Project brief:** [Read the PDF](docs/learning-from-experience.pdf) or view its [HTML source](docs/learning-from-experience.html). The brief uses preliminary, incomplete run data and labels it accordingly.
+
 ## Research question
 
 When an agent fails at an API task, the cause may be a fixable weakness in its instructions—or a noisy task, unsupported request, transient environment problem, or bad evaluation signal. If a Reflector treats every failure as evidence about the instructions, its updates can hurt future tasks. We ask whether grounding reflection in request traces, and curating which failures reach the Reflector, improves held-out performance per unit of learning cost.
