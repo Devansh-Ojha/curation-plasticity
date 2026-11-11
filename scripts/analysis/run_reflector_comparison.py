@@ -14,7 +14,7 @@ import yaml
 
 from src.agents.nvidia_client import NVIDIAClient
 from src.analysis.reflection_grounding import make_reflection_trace_records
-from run_real_a3_smoke import REFLECTOR_PROMPT_TEMPLATE
+from scripts.experiments.run_real_a3_smoke import REFLECTOR_PROMPT_TEMPLATE
 
 
 def append_jsonl(path, item, key):

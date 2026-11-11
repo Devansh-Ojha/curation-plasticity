@@ -1,7 +1,7 @@
 import json
 
 from src.analysis.leak_scanner import FIXED_CURATOR_TAXONOMY, scan_prompts_and_tasks_for_leaks
-from run_real_a3_smoke import CURATOR_PROMPT_TEMPLATE
+from scripts.experiments.run_real_a3_smoke import CURATOR_PROMPT_TEMPLATE
 
 
 def call_with_messages(messages):

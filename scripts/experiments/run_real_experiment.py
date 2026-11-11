@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Optional
 import yaml
 from phoenix.client import Client
 
-from run_real_a3_smoke import CURATOR_PROMPT_TEMPLATE, REFLECTOR_PROMPT_TEMPLATE, LoggedNVIDIAClient
+from .run_real_a3_smoke import CURATOR_PROMPT_TEMPLATE, REFLECTOR_PROMPT_TEMPLATE, LoggedNVIDIAClient
 from src.agents.nvidia_client import NVIDIAAPIError
 from src.agents.real_llm_actor import RealLLMActor
 from src.analysis.metrics import compute_curator_confusion
