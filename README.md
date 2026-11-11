@@ -10,7 +10,7 @@ To view it locally with the chart image, start a small web server from the repos
 python3 -m http.server 8000 --directory docs
 ```
 
-Then open `http://localhost:8000/learning-from-experience.html`. To refresh the Matplotlib chart from a saved run, use `python3 docs/generate_brief_chart.py` (or pass a different `--results` file).
+Then open `http://localhost:8000/learning-from-experience.html`. To regenerate the article's Matplotlib figures from the saved A0 runs, use `.venv/bin/python docs/generate_article_visuals.py`. Pass `--short-results`, `--long-results`, or `--output-dir` to use other files or an output location.
 
 ## Research question
 
@@ -39,7 +39,7 @@ The main comparison is:
 
 For grounded rules, the validator checks that quoted evidence comes from supplied traces and that the rule names a header, parameter, or field supported by the request or error. Proposed values and formats need trace support, unless the error directly names a missing header (which grounds the header requirement itself). It rejects explicit rules that forbid headers or fields used in supplied successful requests. A candidate rule must pass grounding before the gate runs. The gate compares aggregate scores on the training batch; passing it does not guarantee held-out improvement or prevent an individual task from regressing.
 
-The current hosted-run protocol uses a pool of 20 training tasks, batches of 10, 8 epochs, and 40 held-out in-distribution tasks evaluated at epochs 0, 4, and 8. The task generator plants 20% noise. These are defaults in `run_real_experiment.py`; command-line options can shorten a run or select evaluation epochs. Results include held-out success, playbook changes, grounding and gate outcomes, regressions, and per-phase hypothetical model cost.
+The current hosted-run protocol uses a pool of 20 training tasks, batches of 10, 8 epochs, and 40 held-out in-distribution tasks evaluated at epochs 0, 4, and 8. The task generator plants 20% noise. These are defaults in `scripts/experiments/run_real_experiment.py`; command-line options can shorten a run or select evaluation epochs. Results include held-out success, playbook changes, grounding and gate outcomes, regressions, and per-phase hypothetical model cost.
 
 ## Set up
 
@@ -72,13 +72,13 @@ phoenix serve
 Leave Phoenix running in one terminal. In another, activate the environment and start a short A0 run:
 
 ```bash
-python run_real_experiment.py --arm A0 --seed 42 --epochs 3 --eval-epochs 0,3 --run-tag demo
+python -m scripts.experiments.run_real_experiment --arm A0 --seed 42 --epochs 3 --eval-epochs 0,3 --run-tag demo
 ```
 
 For the default 8-epoch protocol, run:
 
 ```bash
-python run_real_experiment.py --arm A0 --seed 42 --run-tag a0-seed42
+python -m scripts.experiments.run_real_experiment --arm A0 --seed 42 --run-tag a0-seed42
 ```
 
 Use `--arm A0-raw` or `--arm A3` to run the other arms. Use seeds `42` or `43`. A new `--run-tag` creates separate local output/log folders and Phoenix experiment names; rerun with the **same** tag to resume that run. Without a tag, the runner uses the standard `seed-<seed>-<arm>` folder and resumes it if a checkpoint exists.

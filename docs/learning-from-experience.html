@@ -6,7 +6,7 @@
 <style>
 :root{color-scheme:light;--ink:#202832;--muted:#65717d;--rule:#d9dee3;--link:#315b70}
 *{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:17px/1.68 Georgia,"Times New Roman",serif}
-main{max-width:1180px;margin:0 auto;padding:52px 32px 72px;display:grid;grid-template-columns:minmax(0,800px) 280px;gap:60px;align-items:start}article{min-width:0}.kicker,.meta,.caption,.small,table,figcaption,.sources,aside{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+main{max-width:1350px;margin:0 auto;padding:52px 32px 72px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,800px) minmax(0,1fr);gap:36px;align-items:start}article{grid-column:2;grid-row:1;min-width:0}.kicker,.meta,.caption,.small,table,figcaption,.sources,aside{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 .kicker{margin:0 0 16px;color:var(--muted);font-size:12px;font-weight:650;letter-spacing:.095em;text-transform:uppercase}
 h1{margin:0 0 18px;font-size:clamp(36px,7vw,54px);font-weight:500;line-height:1.09;letter-spacing:-.035em}
 .dek{margin:0 0 18px;color:#4e5963;font-size:21px;line-height:1.45}.meta{margin:0 0 32px;color:var(--muted);font-size:13px}
@@ -17,34 +17,37 @@ blockquote{margin:28px 0;padding:4px 0 4px 20px;border-left:2px solid #8997a1;co
 .paper-note{margin:20px 0 26px;padding-bottom:18px;border-bottom:1px solid var(--rule)}.paper-note:last-child{border-bottom:0}.paper-note h3{margin-top:0}
 table{width:100%;margin:20px 0 24px;border-collapse:collapse;font-size:14px;line-height:1.5}th{padding:10px 12px 10px 0;border-bottom:2px solid #77838e;text-align:left;font-weight:650}
 td{padding:11px 12px 11px 0;border-bottom:1px solid var(--rule);vertical-align:top}figure{margin:26px 0 24px}figure img{display:block;width:100%;height:auto}
+.table-wrap{width:100%;overflow-x:auto}table.results-table{min-width:670px;font-size:12.5px}table.results-table th,table.results-table td{padding:9px 10px 9px 0}table.results-table td:first-child{min-width:145px}
 figcaption{margin-top:9px;color:var(--muted);font-size:13px;line-height:1.5}.callout{margin:24px 0;padding:15px 18px;border:1px solid var(--rule);color:#46525d;font-size:15px}
 ul,ol{padding-left:24px}li{margin-bottom:8px}pre{overflow:auto;margin:14px 0 20px;padding:14px 16px;background:#f3f5f6;color:#26323b;font:13px/1.6 Menlo,Consolas,monospace}
 .sources{padding-top:18px;border-top:1px solid var(--rule);color:var(--muted);font-size:13px;line-height:1.6}
-aside{position:sticky;top:28px;margin-top:170px;padding:20px;background:#f6f7f7;border:1px solid var(--rule);color:#46525d;font-size:13px;line-height:1.55}
-aside h2{margin:0 0 16px;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
-aside h3{margin:19px 0 6px;font-family:inherit;font-size:13px;font-weight:700}
-aside p{margin:0 0 9px}.side-stat{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #dfe3e5}.side-stat strong{color:#253440;font-size:16px;font-weight:650}.side-stat span{text-align:right;color:var(--muted)}
-aside ul{margin:8px 0 0;padding-left:18px}aside li{margin:0 0 6px}
-@media(max-width:960px){main{max-width:800px;display:block;padding:42px 26px 60px}aside{position:static;margin:36px 0 0}body{font-size:16px}.dek{font-size:19px}}
+aside{grid-column:1;grid-row:1;justify-self:end;width:210px;position:sticky;top:28px;margin-top:170px;padding:18px 16px;background:#f6f7f7;border:1px solid var(--rule);color:#46525d;font-size:13px;line-height:1.55}
+aside h2{margin:0 0 12px;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1fr;gap:5px;padding:8px 2px;border-bottom:1px solid #e1e5e7;color:#3d4d59;text-decoration:none;line-height:1.4}aside a:last-child{border-bottom:0}aside a:hover{text-decoration:underline}aside a span{color:#83909a;font-size:11px;font-variant-numeric:tabular-nums}
+@media(max-width:1300px){main{max-width:800px;display:flex;flex-direction:column;padding:42px 26px 60px}article{order:1}aside{position:static;order:2;width:100%;margin:36px 0 0}body{font-size:16px}.dek{font-size:19px}}
 @media(max-width:560px){main{padding:34px 20px 48px}table{font-size:12px}aside{padding:16px}}
 </style></head>
 <body><main><article>
-<header><p class="kicker">Curation Plasticity · Research note</p>
-<h1>Can agents learn from failure without learning the wrong lesson?</h1>
+<header><h1>Can agents learn from failure without learning the wrong lesson?</h1>
 <p class="dek">A small API-agent study asks whether trace-grounded reflection and task curation can make self-improvement more reliable—and whether that reliability transfers to held-out work.</p>
-<p class="meta">Project update · November 11, 2026 · Preliminary results; experiment in progress</p></header>
+</header>
 <hr>
 <p>A failed request looks like feedback. But what does it tell the agent? Maybe a required header is missing. Maybe the task is impossible, the environment is flaky, or the evaluator is wrong. If a Reflector treats every failure as a prompt defect, it can turn noise into a permanent rule.</p>
 <blockquote>The challenge is not just to help an agent learn from experience. It is to decide which experience is safe to learn from.</blockquote>
 
-<h2>What the papers contribute</h2>
+<h2 id="papers">What the papers contribute</h2>
 <div class="paper-note"><h3><a href="https://arxiv.org/abs/2610.08902">Agent Plasticity: Measuring Self-Improvement Through Experience</a></h3>
 <p>Singh and colleagues argue that agent evaluations should measure how much performance improves on future held-out tasks, how efficiently the agent learns, and where the improvement process breaks. Their framing separates final capability from learning efficiency and asks whether gains transfer beyond the tasks that produced them.</p></div>
 <div class="paper-note"><h3><a href="https://arxiv.org/abs/2610.37651">GEPA-Curator: Curated Learning for Self Improving Agents</a></h3>
 <p>Yu and colleagues focus on the quality of experiences that reach a prompt optimizer. Their Curator filters tasks likely to provide unreliable signals and can retrieve a prior successful trajectory. The motivation is that a failure may come from the prompt, task, tools, harness, environment, or judge.</p></div>
 <p>This project borrows those questions, but uses a smaller synthetic REST API rather than reproducing either paper’s benchmarks. The aim is to make the failure-to-rule step easy to inspect.</p>
 
-<h2>What we are testing</h2>
+<h2 id="blog">What the Arize blog changes about the approach</h2>
+<p>The Arize article <a href="https://arize.com/blog/does-being-rude-to-ai-work/">“Does Being Rude to AI Work?”</a> is a style reference for this report and a useful example of experimental troubleshooting. Its central lesson for this project is methodological: a result can look like an effect of the variable you meant to test while actually being driven by a second instruction hidden in the prompt.</p>
+<p>In its first comparison, rude prompts seemed to reduce output length. On inspection, those prompts also asked for short answers, while the polite prompts did not. The author then ran follow-up comparisons: first removing the extra brevity wording, then keeping the task sentence constant and changing only the tone. The article tracks several outcomes—answer accuracy, visible output tokens, hidden reasoning tokens, latency, and judge scores—because a shorter answer by itself does not prove a better or cheaper system.</p>
+<p>That sequence informs this study in two ways. First, compare arms that share the same tasks, actor, and evaluation setup, and state exactly which mechanism differs. Second, inspect the intermediate evidence when a result moves: a playbook rule, a rejected proposal, a retry, or a changed evaluation can explain a score as much as the headline number can. The analogy has limits: this repository studies learning from API-task experience, not politeness or user tone, and it does not reproduce the blog’s six-model experiment.</p>
+
+<h2 id="experiment">What we are testing</h2>
 <p>The agent completes API tasks and carries a playbook of learned rules between epochs. The task pool mixes learnable requests with easy controls and planted noise, including impossible requests and unreliable feedback. On a failure, the Reflector receives the failed request, error body, and any successful request observed afterward.</p>
 <p>A deterministic validator checks that a proposed rule is tied to those traces: it must name a supported header, parameter, or field; unsupported values need successful-trace evidence; and explicit instructions that forbid fields used by successful requests are rejected. Only grounded rules reach the gate. The gate compares aggregate scores on the training batch, so it can still accept a candidate that regresses one task.</p>
 <table><thead><tr><th>Arm</th><th>Comparison</th></tr></thead><tbody>
@@ -52,41 +55,64 @@ aside ul{margin:8px 0 0;padding-left:18px}aside li{margin:0 0 6px}
 <tr><td><b>A0-raw</b></td><td>Same Reflector prompt and gate, without grounding validation.</td></tr>
 <tr><td><b>A3</b></td><td>Curator can defer noisy or well-understood tasks and provide a relevant prior success; grounding and gate remain.</td></tr>
 </tbody></table>
+<h3>The questions behind the comparisons</h3>
+<p><b>Does grounding help?</b> A0-raw isolates the validator: if ungrounded proposals enter the playbook more often, do they help, do nothing, or damage later performance? <b>Does curation help?</b> A3 tests whether choosing which examples to reflect on—and supplying a relevant known success—improves the quality of updates. <b>Does learning transfer?</b> Held-out tasks are not used to write the playbook; their scores show whether improvements generalize beyond the current training batch. <b>What does each improvement cost?</b> We track calls, retries, latency, and configured reference-cost estimates alongside success.</p>
+<p>These are separable questions, but the current arms do not establish every causal mechanism on their own. In particular, a difference between A0 and A3 reflects the Curator package (selection plus retrieval), and a short run or single seed is too noisy to support a strong conclusion. Matched runs across seeds, completed evaluation checkpoints, and rule-level audits are needed before interpreting a pattern as evidence.</p>
+<figure><img src="assets/learning-loop.png" alt="Experiment flow: task batch, actor and API, trace evidence, optional A3 curator, Reflector, grounding validator, batch gate, and playbook. Held-out tasks are scored separately and do not update the playbook.">
+<figcaption>Four stages turn training experience into a retained playbook rule. A0-raw skips grounding, while A3 adds curation. The separate held-out check measures a saved playbook checkpoint and never supplies examples for updates.</figcaption></figure>
 
-<h2>What the first run says so far</h2>
-<p>The saved A0 seed-42 checkpoint is at epoch 5 of 8. On the same 40 held-out tasks, success was 24/40 (60%) at epoch 0 and 22/40 (55%) at epoch 4.</p>
-<figure><img src="assets/heldout-success-a0-seed42.png" alt="Held-out task success was 60 percent at epoch zero and 55 percent at epoch four.">
-<figcaption>Held-out ID success for one A0 seed. Epoch 8 has not yet been evaluated; this is a partial run, not a final comparison.</figcaption></figure>
-<p>Training-batch success varied across epochs: 7/10, 5/10, 5/10, 6/10, and 9/10. The saved epoch-5 playbook contains zero rules. Tracked hypothetical cost is about $0.111; it is a configured reference-cost estimate, not an invoice.</p>
-<div class="callout"><b>Why this is preliminary:</b> a later attempt stopped during epoch 6 after repeated HTTP 429 rate-limit errors, following three whole-episode attempts. The failed episode was not scored as a task failure. This is one seed, and the full held-out schedule is unfinished. The 5-point difference cannot show that A0 harms performance or identify what caused the change.</div>
+<h2 id="observability">How the runs are observed</h2>
+<p>The repository uses <a href="https://phoenix.arize.com/">Arize Phoenix</a> locally for traces and experiment review. The runner emits OpenTelemetry spans around episodes and model/tool activity, tagged with safe run metadata such as arm, seed, epoch, phase, token counts, latency-related call records, status, and success. This makes it possible to follow an episode through acting, reflection, curation, gating, and held-out evaluation, then compare saved evaluations in Phoenix.</p>
+<p>There are two complementary records. The run’s JSON and JSONL files preserve detailed local outcomes, proposal decisions, retry events, and per-call timing for analysis. Phoenix provides a visual trace and experiment view for inspecting those events and comparing evaluation rows across arms and checkpoints. The tracing helper applies an allowlist: prompts, model outputs, ground-truth labels, and credentials are not attached to spans. The normal experiment setup is configured for a local collector at <code>localhost:6006</code>; Phoenix is an observability and evaluation aid here, not the source of the learning signal and not a substitute for the saved artifacts.</p>
+<p>For hosted inference, I used the NVIDIA API access available to me at no charge. The runner reads the credential from the <code>NVIDIA_API_KEY</code> environment variable; the key itself is not stored in the repository or included in the report. Actor requests use <code>nvidia/nemotron-3.5-bolt-e4b</code>, and Reflector/optimizer requests use <code>meta/llama-3.2-90b-vision-instruct</code> through NVIDIA’s OpenAI-compatible endpoint. This made it possible to run the experiment without hosting model weights locally, but free access still had rate limits and intermittent timeouts. The dollar figures in the saved results use configured hypothetical reference prices; they are a way to compare estimated usage, not the amount charged to me or a provider invoice.</p>
+<p>This setup is useful beyond this experiment. For a production API agent, the same style of trace can reveal whether failures cluster around a particular tool, endpoint, retry path, or prompt revision. A team could then replay representative cases, add them to a regression set, and check a proposed fix against successful as well as failed traces before deploying it. Here we use a controlled synthetic testbed so those cause-and-effect questions are easier to examine safely.</p>
 
-<h2>What comes next</h2>
-<p>Finish the eight-epoch runs and compare A0, A0-raw, and A3 on matched seeds and held-out checkpoints. Report held-out success alongside costs, accepted rules, grounding/gate rejections, regressions, and API retry counts. The useful comparison is whether grounding and curation improve held-out learning after cost—not whether one short run happens to end higher.</p>
+<h2 id="results">What the first run says so far</h2>
+<p>There are two saved A0 seed-42 runs. The first completed three epochs; the longer run stopped after checkpoint 5 of 8. Both have the same 40-task held-out baseline. Their task-level transitions and exploratory paired comparisons are summarized below.</p>
+<div class="table-wrap"><table class="results-table"><thead><tr><th>Run and comparison</th><th>Held-out success</th><th>Task outcomes from baseline</th><th>Exact paired p</th></tr></thead><tbody>
+<tr><td>Three-epoch run<br>complete, epoch 0 → 3</td><td>24/40 → 19/40<br>(60% → 47.5%)</td><td>19 stayed successful; 16 stayed unsuccessful; 5 regressed; 0 improved</td><td>0.0625</td></tr>
+<tr><td>Longer run<br>incomplete, epoch 0 → 4 eval</td><td>24/40 → 22/40<br>(60% → 55%)</td><td>22 stayed successful; 16 stayed unsuccessful; 2 regressed; 0 improved</td><td>0.50</td></tr>
+</tbody></table></div>
+<p>The p-values are two-sided exact McNemar tests on paired task outcomes. They are exploratory, post-hoc comparisons from one seed; neither is below 0.05, and these small samples cannot establish that A0 helps, harms, or has no effect. The repeated held-out tasks also make the task-by-task transitions more informative here than comparing percentages alone.</p>
+<figure><img src="assets/heldout-success-a0-seed42.png" alt="Two separate A0 seed-42 runs: the completed three-epoch run moved from 60% to 47.5%; the incomplete longer run moved from 60% to 55% at epoch four.">
+<figcaption>This chart shows the separate, longer run: held-out ID success was 60% at epoch 0 and 55% at epoch 4. Epoch 8 was not reached; this is a partial run, not a final comparison.</figcaption></figure>
+<figure><img src="assets/heldout-transitions-a0-seed42.png" alt="Among 40 held-out tasks in the completed three-epoch run, 19 stayed successful, 16 stayed unsuccessful, 5 regressed, and none improved.">
+<figcaption>Task-by-task outcomes for the completed run. The matrix shows five regressions and no improvements; this single-seed pattern may not repeat.</figcaption></figure>
+<p>The proposal record shows where this run’s learning loop stopped or changed a candidate:</p>
+<div class="table-wrap"><table class="results-table"><thead><tr><th>Run</th><th>Grounding rejects</th><th>Reflector API failures</th><th>Gate rejects</th><th>Accepted operations / retained rules</th></tr></thead><tbody>
+<tr><td>Three epochs, complete</td><td>2</td><td>0</td><td>1<br>(7/10 → 6/10)</td><td>2 operations accepted at 5/10 → 5/10; duplicate X-Api-Key rules, 1 distinct instruction</td></tr>
+<tr><td>Longer run, through epoch 5</td><td>0</td><td>6<br>(2 each in epochs 2–4)</td><td>2<br>(7/10 → 6/10; 9/10 → 8/10)</td><td>0 retained rules</td></tr>
+</tbody></table></div>
+<p>In the completed run, the gate accepted a candidate with an unchanged aggregate score even though one previously successful training task regressed. The two accepted operations were duplicate copies of the same X-Api-Key rule. This shows how a batch score can hide per-task regressions and why proposal counts should be separated from distinct retained rules.</p>
+<p>The separate longer run reached checkpoint 5 of 8. Its training-batch scores were 7/10, 5/10, 5/10, 6/10, and 9/10; it had no retained playbook rules at that checkpoint. Its hypothetical reference-cost estimate was about $0.111, compared with about $0.061 for the completed three-epoch run. These figures are not actual charges.</p>
+<figure><img src="assets/estimated-cost-by-phase-a0-seed42.png" alt="Hypothetical reference-cost estimate for the completed three-epoch run: evaluation 59%, acting 19%, gate reruns 13%, reflection 9%, curation 0%.">
+<figcaption>Configured reference-price estimate by phase for the completed run. Held-out evaluation dominates because the 40-task set is scored at baseline and epoch 3. These values are not provider charges.</figcaption></figure>
+<div class="callout"><b>Why this is preliminary:</b> both runs use one seed, the full run lacks its epoch-8 evaluation, and the recent attempt was interrupted while gate episodes were running. Rate-limit and timeout retries, along with NVIDIA API availability, made the hosted runs slow. Do not treat an interrupted epoch as a task failure; report it as incomplete. Replicated runs and more seeds are needed before making a performance claim.</div>
+
+<h2 id="next">What comes next</h2>
+<p>Finish the eight-epoch runs and compare A0, A0-raw, and A3 on matched seeds and held-out checkpoints. Then check the full trajectory, not only the final score: which rules survived validation and gating, which tasks regressed, how often API errors forced retries, and how much model usage each arm required. If one arm appears better, repeat it across seeds and inspect whether the advantage persists on both in-distribution and out-of-distribution held-out tasks.</p>
+<p>The intended use is a practical decision aid for teams building agents that learn from their own logs: decide whether an experience is trustworthy, turn it into a testable instruction, and verify the instruction against later work before retaining it. The research question is whether grounding and curation make that loop more reliable and cost-effective. Until the planned runs are complete, this remains a hypothesis and an implementation under evaluation.</p>
 <p>To reproduce a short hosted run, start Phoenix locally, set <code>NVIDIA_API_KEY</code>, and run from the repository root:</p>
-<pre>python run_real_experiment.py --arm A0 --seed 42 --epochs 3 --eval-epochs 0,3 --run-tag demo</pre>
+<pre>python -m scripts.experiments.run_real_experiment --arm A0 --seed 42 --epochs 3 --eval-epochs 0,3 --run-tag demo</pre>
 <p class="small">Hosted runs make real model calls and may incur provider charges. The offline test suite does not make model calls. Reuse the same run tag to resume; choose a new tag for a separate output folder.</p>
 
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ol class="sources">
   <li>Harman Singh et al. <a href="https://arxiv.org/abs/2610.08902">Agent Plasticity: Measuring Self-Improvement Through Experience</a>. arXiv:2610.08902.</li>
   <li>Zack Yu et al. <a href="https://arxiv.org/abs/2610.37651">GEPA-Curator: Curated Learning for Self Improving Agents</a>. arXiv:2610.37651.</li>
+  <li>Jim Bennett. <a href="https://arize.com/blog/does-being-rude-to-ai-work/">Does Being Rude to AI Work? What 6 Models Revealed</a>. Arize, October 2026. Used as an experimental-design and editorial reference.</li>
 </ol>
 </article>
-<aside aria-label="Study summary">
-  <h2>Study at a glance</h2>
-  <div class="side-stat"><strong>20</strong><span>training tasks in pool</span></div>
-  <div class="side-stat"><strong>10</strong><span>tasks per batch</span></div>
-  <div class="side-stat"><strong>40</strong><span>held-out tasks</span></div>
-  <div class="side-stat"><strong>8</strong><span>planned epochs</span></div>
-  <h3>Saved run snapshot</h3>
-  <ul>
-    <li>A0 · seed 42</li>
-    <li>Checkpoint through epoch 5</li>
-    <li>Held-out: 60% at baseline, 55% at epoch 4</li>
-    <li>Latest attempt stopped in epoch 6 after repeated HTTP 429s</li>
-  </ul>
-  <h3>What is being compared</h3>
-  <p><b>A0</b> grounded reflection; <b>A0-raw</b> removes grounding; <b>A3</b> adds task curation and prior-success retrieval.</p>
-  <p><b>Read cautiously:</b> this is one incomplete run, not a final result.</p>
+<aside aria-label="Article contents">
+  <h2>In this article</h2>
+  <nav>
+    <a href="#papers"><span>01</span><span>What the papers contribute</span></a>
+    <a href="#blog"><span>02</span><span>How the blog informs the approach</span></a>
+    <a href="#experiment"><span>03</span><span>What we are testing</span></a>
+    <a href="#observability"><span>04</span><span>Observability and model access</span></a>
+    <a href="#results"><span>05</span><span>What the first run says</span></a>
+    <a href="#next"><span>06</span><span>Uses and next steps</span></a>
+    <a href="#references"><span>07</span><span>References</span></a>
+  </nav>
 </aside>
 </main></body></html>

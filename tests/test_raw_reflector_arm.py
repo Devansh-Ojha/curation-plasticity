@@ -1,6 +1,6 @@
 import json
 
-import run_real_experiment
+from scripts.experiments import run_real_experiment
 from src.loop.provenance import Playbook
 
 

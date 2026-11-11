@@ -8,7 +8,7 @@ import urllib.error
 import pytest
 
 from src.agents.nvidia_client import NVIDIAAPIError, NVIDIAClient
-from run_real_experiment import safe_episode
+from scripts.experiments.run_real_experiment import safe_episode
 
 
 class FlakyActor:
