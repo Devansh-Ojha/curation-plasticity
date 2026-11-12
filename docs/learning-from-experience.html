@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Two Baselines, Six Tasks Apart: Why I Can’t Tell Whether My Agent Learned Anything</title>
+<title>Does Curating What an Agent Learns Raise Plasticity per Dollar?</title>
 <style>
 :root{color-scheme:light;--ink:#202832;--muted:#65717d;--rule:#d9dee3;--link:#315b70}
 *{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:17px/1.68 Georgia,"Times New Roman",serif}
@@ -28,11 +28,11 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 @media(max-width:560px){main{padding:34px 20px 48px}table{font-size:12px}aside{padding:16px}}
 </style></head>
 <body><main><article>
-<header><h1>Two Baselines, Six Tasks Apart: Why I Can’t Tell Whether My Agent Learned Anything</h1>
-<p class="dek">A small API-agent study finds that baseline variation can be larger than the learning effect it hoped to measure.</p>
+<header><h1>Does Curating What an Agent Learns Raise Plasticity per Dollar?</h1>
+<p class="dek">This project tests whether an API agent can turn failures into reliable playbook rules, separating trace support for a proposed rule from evidence that the rule helps on later tasks.</p>
 </header>
 <hr>
-<p>Two empty-playbook baseline evaluations used the same seed, identical 40-task held-out file, and locked actor and optimizer models, yet scored 24/40 and 30/40. That six-task (15-percentage-point) range is a two-run no-update comparison, not a stable variance estimate; it is nevertheless larger than the A0 change and close to the A3 change reported below. The evidence is useful for auditing the learning loop, not for establishing that a retained playbook caused a performance change. See <a href="#results">Results: the first runs</a> and <a href="#limitations">Limitations</a>.</p>
+<p>The evidence comes from early, single-seed A0 and A3 runs. It is useful for auditing the learning loop, not for establishing that a retained playbook caused a performance change; the observed score changes and their limits are reported in <a href="#results">Results</a> and <a href="#limitations">Limitations</a>.</p>
 
 <h2 id="papers">What the papers contribute</h2>
 <div class="paper-note"><h3><a href="https://arxiv.org/abs/2610.08902">Agent Plasticity: Measuring Self-Improvement Through Experience</a></h3>
@@ -63,7 +63,7 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <figure><img src="assets/learning-loop.png" alt="Experiment flow: task batch, actor and API, trace evidence, optional A3 curator, Reflector, grounding validator, batch gate, and playbook. Held-out tasks are scored separately and do not update the playbook.">
 <figcaption>Four stages turn training experience into a retained playbook rule. A0-raw skips grounding, while A3 adds curation. The separate held-out check measures a saved playbook checkpoint and never supplies examples for updates.</figcaption></figure>
 
-<h2 id="results">Results: the first runs</h2>
+<h2 id="results">What happened in the first runs</h2>
 <p>The task transitions and paired comparisons are shown below. In the completed A0 run, the saved task labels show that the failures were on learnable tasks, not on the planted impossible or unreliable training cases.</p>
 <div class="table-wrap"><table class="results-table"><thead><tr><th>Run and comparison</th><th>Held-out success</th><th>Task outcomes from baseline</th><th>Exact paired p</th></tr></thead><tbody>
 <tr><td>Three-epoch A0<br>epoch 0 → 3</td><td>24/40 → 19/40<br>(60% → 47.5%)</td><td>19 stayed successful; 16 stayed unsuccessful; 5 regressed; 0 improved</td><td>0.0625</td></tr>
@@ -71,8 +71,7 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <tr><td>A3, interim<br>epoch 0 → 4</td><td>30/40 → 22/40<br>(75% → 55%)</td><td>19 stayed successful; 7 stayed unsuccessful; 11 regressed; 3 improved</td><td>0.0574</td></tr>
 </tbody></table></div>
 <p>These p-values are two-sided exact McNemar tests on paired task outcomes.</p>
-<div class="callout"><b>Do not compare these rows as arm effects.</b> A3 is an interim epoch-4 checkpoint, while the saved A0 runs use different durations and checkpoint schedules. The baseline gap itself shows that one stochastic run per arm cannot identify an arm effect.</div>
-<p>The A3 checkpoint is interim: epochs 5–8 were still running when this result was recorded. Through epoch 4, the Curator made 40 decisions: 27 run decisions, 13 skips, and one prior-success anchor. Thus the retrieval half of A3 was barely exercised. One X-Api-Key rule was retained and there were no terminal API failures. With 11 regressions, three improvements, and no saved per-task header record, the pattern is consistent with execution noise or a rule that generalized too broadly; the audit cannot distinguish those explanations.</p>
+<p>The A3 checkpoint is interim: epochs 5–8 were still running when this result was recorded. Through epoch 4, the Curator made 40 decisions, including 13 skips and one prior-success anchor; one X-Api-Key rule was retained, and there were no terminal API failures. Those mechanism records do not establish that curation caused the held-out change.</p>
 <figure><img src="assets/heldout-success-a0-seed42.png" alt="Held-out ID success at the saved checkpoints for two separate A0 seed-42 runs.">
 <figcaption>The longer run was checkpointed through epoch 5; held-out evaluation was saved at epochs 0 and 4.</figcaption></figure>
 <figure><img src="assets/heldout-transitions-a0-seed42.png" alt="Among 40 held-out tasks in the completed three-epoch run, 19 stayed successful, 16 stayed unsuccessful, 5 regressed, and none improved.">
@@ -107,17 +106,19 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 
 <h2 id="change-my-mind">What would change my mind</h2>
 <p>Before running A0-raw and A3, set a practical threshold—for example, a five-percentage-point held-out difference across matched seeds. I would count grounding as helping if A0 beats A0-raw by at least that margin, the paired uncertainty interval excludes zero, and the rule audit finds fewer unsupported retained rules. I would count it as harmful if the direction reverses or task regressions increase. If intervals cover both outcomes, the result is inconclusive. A3 should be judged separately against A0 because it combines curation and prior-success retrieval.</p>
-<p>A future protocol should preregister the gate criterion, reject a candidate if any previously passing task fails, deduplicate equivalent rules before writing the playbook, and use a larger gate batch or multiple gate batches so one task does not move the score by 10 percentage points.</p>
+<p>A future protocol should preregister the gate criterion, use a larger gate batch or multiple gate batches, and separately audit per-task regressions and duplicate rules.</p>
 
 <h2 id="limitations">Limitations</h2>
 <p>The saved evidence comprises A0 seed 42 runs and one interim A3 seed-42 checkpoint. There is no repeated no-update baseline or A0-raw comparison, and the A0 and A3 runs are not matched in duration or checkpoint schedule. Thus the held-out changes reported in <a href="#results">Results</a> cannot be separated from run-to-run model variation or attributed to a playbook rule. Both paired tests are post-hoc and small.</p>
 <p>The held-out ID set repeats the training instruction templates, and the generated OOD split repeats those templates too; moreover, the runner did not evaluate OOD. The saved results record playbook reads but not per-task header use. Retry logs record task IDs and retry numbers but omit the evaluation epoch. All 40 held-out task IDs produced at least one HTTP 429 retry record (80 records total), so every held-out task was retried at least once; rate limiting may therefore affect timing-sensitive outcomes. These runs use a synthetic API and do not establish performance on production APIs.</p>
 
+<h2 id="phoenix-workflow">How I used Arize Phoenix</h2>
+<p>I used a local <a href="https://phoenix.arize.com/">Arize Phoenix</a> instance as the experiment-review layer, not as the source of scores or learning updates. Before a run, the runner creates or reuses a seed-specific held-out dataset containing opaque task IDs and sanitized task text. It refuses category labels and redacts test-key-like strings before upload, so Phoenix does not receive the hidden labels, expected answers, or the NVIDIA credential.</p>
+<p>At each saved held-out checkpoint, the runner replays the saved per-task outcomes into a Phoenix experiment named by arm, seed, run tag, and epoch. Three deterministic code evaluators record whether the task succeeded, the number of steps used, and whether the actor read the playbook. In Phoenix, I use those checkpoint experiments to compare the same held-out dataset across arms and epochs—for example, baseline versus epoch 4 for A3—then use the local result files to investigate any surprising movement.</p>
+<p>The workflow has two complementary records. Phoenix receives local OpenTelemetry spans with allowlisted run metadata such as arm, seed, epoch, phase, model ID, status, and token or latency summaries. The local JSON and JSONL artifacts retain the detailed episode outcomes, proposal decisions, gate comparisons, and retry events needed for audit. Prompts, model outputs, labels, and credentials are excluded from Phoenix spans; Phoenix is therefore a navigation and comparison surface, while the local artifacts remain the detailed evidence.</p>
+
 <h2 id="appendix">Appendix: instrumentation, hosting, and cost</h2>
-<h3>Arize Phoenix workflow</h3>
-<p>I used a local <a href="https://phoenix.arize.com/">Arize Phoenix</a> instance to compare saved held-out checkpoints by arm, seed, and epoch. Phoenix receives sanitized task text and opaque IDs, then deterministic success, steps-used, and playbook-read evaluations; it does not provide the learning signal. Allowlisted spans contain run metadata and usage summaries, while local JSON/JSONL retains detailed episodes, proposal decisions, gate comparisons, and retries. Prompts, model outputs, labels, and credentials are excluded from Phoenix spans.</p>
-<h3>Costs</h3>
-<p>The configured hypothetical reference-cost estimate was about $0.061 for the completed three-epoch A0 run, $0.111 for the longer A0 run through checkpoint 5, and $0.107 for A3 through its epoch-4 checkpoint, including Curator calls. These are not provider charges. Because the runs are unmatched, these figures do not establish a per-dollar advantage.</p>
+<p>For the completed three-epoch run, the configured hypothetical reference-cost estimate was about $0.061; the longer saved run was about $0.111 through checkpoint 5. These estimates are not provider charges.</p>
 <p>Hosted inference used the NVIDIA API access available to me at no charge, with Nemotron for the actor and Llama 3.2 for Reflector/optimizer calls. The key is read from <code>NVIDIA_API_KEY</code> and is not included in the repository. Free access was rate-limited and experienced timeouts. Episodes retry up to three whole-episode attempts; if an API error persists, the episode is not scored as a task failure—the run stops instead. The completed held-out evaluations have zero terminal API failures. The scope and possible effect of the 429 retries are noted in <a href="#limitations">Limitations</a>.</p>
 <figure><img src="assets/estimated-cost-by-phase-a0-seed42.png" alt="Hypothetical reference-cost estimate for the completed three-epoch run: evaluation 59%, acting 19%, gate reruns 13%, reflection 9%, curation 0%.">
 <figcaption>Phase breakdown of configured reference-price estimates for the completed A0 run.</figcaption></figure>
@@ -136,11 +137,12 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
     <a href="#papers"><span>01</span><span>What the papers contribute</span></a>
     <a href="#failure-signal"><span>02</span><span>Why failures need diagnosis</span></a>
     <a href="#experiment"><span>03</span><span>What we are testing</span></a>
-    <a href="#results"><span>04</span><span>Results: the first runs</span></a>
+    <a href="#results"><span>04</span><span>What the first runs exposed</span></a>
     <a href="#change-my-mind"><span>05</span><span>What would change my mind</span></a>
     <a href="#limitations"><span>06</span><span>Limitations</span></a>
-    <a href="#appendix"><span>07</span><span>Instrumentation and cost</span></a>
-    <a href="#references"><span>08</span><span>References</span></a>
+    <a href="#phoenix-workflow"><span>07</span><span>How I used Arize Phoenix</span></a>
+    <a href="#appendix"><span>08</span><span>Instrumentation and cost</span></a>
+    <a href="#references"><span>09</span><span>References</span></a>
   </nav>
 </aside>
 </main></body></html>
