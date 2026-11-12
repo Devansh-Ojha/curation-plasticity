@@ -33,6 +33,7 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 </header>
 <hr>
 <p><i>Plasticity</i> here means the efficiency with which an agent turns experience into gains on future held-out tasks. The early answer is that this study cannot yet show such a gain: two empty-playbook baseline evaluations scored 24/40 and 30/40, while the A0 and interim A3 results both declined. The evidence is useful for auditing the learning loop, not for establishing that a retained playbook caused a performance change; see <a href="#results">What happened in the first runs</a> and <a href="#limitations">Limitations</a>.</p>
+<p>I built this because production agents do not only fail from a bad prompt: they also encounter flaky tools, rate limits, bad task assumptions, and imperfect judges. If an agent treats every failure as a lesson, it can preserve a confident but harmful instruction; this project makes that failure-to-rule path observable and testable.</p>
 
 <h2 id="papers">What the papers contribute</h2>
 <div class="paper-note"><h3><a href="https://arxiv.org/abs/2610.08902">Agent Plasticity: Measuring Self-Improvement Through Experience</a></h3>
@@ -62,6 +63,13 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 </tbody></table></div>
 <figure><img src="assets/learning-loop.png" alt="Experiment flow: task batch, actor and API, trace evidence, optional A3 curator, Reflector, grounding validator, batch gate, and playbook. Held-out tasks are scored separately and do not update the playbook.">
 <figcaption>Four stages turn training experience into a retained playbook rule. A0-raw skips grounding, while A3 adds curation. The separate held-out check measures a saved playbook checkpoint and never supplies examples for updates.</figcaption></figure>
+
+<h2 id="phoenix-workflow">How I used Arize Phoenix</h2>
+<p>I used a local <a href="https://phoenix.arize.com/">Arize Phoenix</a> instance as the experiment-review surface. It was not the source of the learning signal or score: the runner and deterministic graders produced those. Phoenix let me inspect the same held-out dataset at each saved checkpoint and compare runs without putting labels, expected answers, or credentials into the observability system.</p>
+<h3>Dataset experiments for checkpoint comparison</h3>
+<p>For each seed, the runner creates or reuses a Phoenix dataset containing sanitized held-out task text and opaque task IDs. At baseline and each scheduled checkpoint, it replays the saved task outcomes as a named Phoenix experiment keyed by arm, seed, run tag, and epoch. I used the dataset experiment comparison view to inspect the three code-evaluated fields side by side: task success, steps used, and whether the actor read the playbook. This is how I compare baseline with a later A3 checkpoint or line up corresponding runs once matched arms exist.</p>
+<h3>Trace context for failure diagnosis</h3>
+<p>The runner emits local OpenTelemetry spans tagged with arm, seed, epoch, phase, model ID, status, and token or latency summaries. I use those tags to follow whether a problem occurred while acting, curating, reflecting, gating, or evaluating, then return to the local JSON/JSONL audit files for the exact proposal, gate score, and retry record. The span allowlist excludes prompts, model outputs, labels, and credentials; detailed local artifacts remain the source for rule-level evidence.</p>
 
 <h2 id="results">What happened in the first runs</h2>
 <p>The task transitions and paired comparisons are shown below. In the completed A0 run, the saved task labels show that the failures were on learnable tasks, not on the planted impossible or unreliable training cases.</p>
@@ -110,6 +118,9 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <p>In the epoch-3 held-out evaluation, the actor read the playbook on 34 of 40 tasks. The saved per-task evaluation rows do not link outcomes to the actual request headers, so they cannot show whether the actor included X-Api-Key after reading the rule. Rule adherence—and whether a failure came from a bad rule or failure to apply it—remains unmeasured.</p>
 <p>In the completed run, held-out evaluation accounted for 59% of the configured reference-cost estimate because all 40 ID tasks were evaluated at baseline and epoch 3.</p>
 
+<h2 id="challenges">Challenges and how I handled them</h2>
+<p><b>Noisy outcomes.</b> The 24/40 and 30/40 empty-playbook baselines made clear that a single run cannot identify learning; I now treat repeated no-update baselines and matched arms as prerequisites for a claim. <b>Unsupported rules.</b> The grounding validator rejects trace quotes that do not match and fixes unsupported by a success trace, while the rejected-rule audit exposes what that mechanical check still misses. <b>Hosted instability.</b> HTTP 429s and timeouts are logged separately from task failures, retried, and reported as timing limitations rather than silently counted as agent mistakes. <b>Missing application evidence.</b> The records show playbook reads but not the final request headers, so I report rule adherence as unmeasured instead of assuming a retained rule was used.</p>
+
 <h2 id="change-my-mind">What would change my mind</h2>
 <p>Before running A0-raw and A3, repeat empty-playbook baselines and set a practical threshold from that measured spread. Until then, a claimed difference should exceed the observed 15-percentage-point two-run range, not a five-percentage-point threshold. I would count grounding as helping only if A0 beats A0-raw by that preregistered margin, the paired uncertainty interval excludes zero, and the rule audit finds fewer unsupported retained rules. I would count it as harmful if the direction reverses or task regressions increase. If intervals cover both outcomes, the result is inconclusive. A3 should be judged separately against A0 because it combines curation and prior-success retrieval.</p>
 <p>A future protocol should preregister the gate criterion, reject a candidate if any previously passing task fails, deduplicate equivalent rules before writing the playbook, and use a larger gate batch or multiple gate batches so one task does not move the score by 10 percentage points.</p>
@@ -118,9 +129,10 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <p>The saved evidence comprises A0 seed 42 runs and one interim A3 seed-42 checkpoint. The observed six-task baseline spread comes from only two no-update observations; it is not yet a noise estimate. There is no A0-raw comparison, and the A0 and A3 runs are not matched in duration or checkpoint schedule. Thus the held-out changes reported in <a href="#results">What happened in the first runs</a> cannot be separated from run-to-run model variation or attributed to a playbook rule. Both paired tests are post-hoc and small.</p>
 <p>The held-out ID set repeats the training instruction templates, and the generated OOD split repeats those templates too; moreover, the runner did not evaluate OOD. The saved results record playbook reads but not per-task header use. Retry logs record task IDs and retry numbers but omit the evaluation epoch. All 40 held-out task IDs produced at least one HTTP 429 retry record (80 records total), so every held-out task was retried at least once; rate limiting may therefore affect timing-sensitive outcomes. These runs use a synthetic API and do not establish performance on production APIs.</p>
 
+<h2 id="developer-learnings">Learnings for other developers</h2>
+<p>First, log the complete path from failure to retained instruction: a headline score cannot reveal whether the problem was curation, reflection, validation, gating, or application. Second, treat retries and model variance as experimental variables, not background noise; run no-update controls before calling a score movement learning. Third, make retention reversible and testable: ground a rule in evidence, gate it against regressions, deduplicate it, and record whether the actor actually applied it. Finally, use an experiment UI such as Phoenix to compare consistent checkpoints, but keep a privacy-bounded local audit trail for the exact evidence the UI should not store.</p>
+
 <h2 id="appendix">Appendix: instrumentation, hosting, and cost</h2>
-<h3>Arize Phoenix workflow</h3>
-<p>I used a local <a href="https://phoenix.arize.com/">Arize Phoenix</a> instance to compare saved held-out checkpoints by arm, seed, and epoch. It receives sanitized task text, opaque IDs, deterministic success/steps/playbook-read evaluations, and allowlisted span metadata; local JSON/JSONL retains the detailed episode, proposal, gate, and retry audit record. Prompts, model outputs, labels, and credentials are excluded from Phoenix spans.</p>
 <h3>Costs, retries, and possible explanations</h3>
 <p>The configured hypothetical reference-cost estimate was about $0.061 for the completed three-epoch A0 run, $0.111 for the longer A0 run through checkpoint 5, and $0.107 for A3 through epoch 4, including Curator calls. These are not provider charges. Cost per held-out gain cannot be estimated because no matched arm has a demonstrated gain. The 80 HTTP 429 records refer to the completed three-epoch A0 held-out evaluations: they are HTTP-level retries, not 80 whole-episode retries. Whole episodes retry up to three times after persistent API errors; if that still fails, the episode is not scored as a task failure and the run stops instead.</p>
 <p>Possible explanations for the score changes are hypotheses, not conclusions: run-to-run model variance, unmeasured misuse of a retained rule, a coarse 10-task gate, rate-limit timing effects, and Reflector timeouts in the longer A0 run.</p>
@@ -141,11 +153,14 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
     <a href="#papers"><span>01</span><span>What the papers contribute</span></a>
     <a href="#failure-signal"><span>02</span><span>Why failures need diagnosis</span></a>
     <a href="#experiment"><span>03</span><span>What we are testing</span></a>
-    <a href="#results"><span>04</span><span>What happened in the first runs</span></a>
-    <a href="#change-my-mind"><span>05</span><span>What would change my mind</span></a>
-    <a href="#limitations"><span>06</span><span>Limitations</span></a>
-    <a href="#appendix"><span>07</span><span>Instrumentation and cost</span></a>
-    <a href="#references"><span>08</span><span>References</span></a>
+    <a href="#phoenix-workflow"><span>04</span><span>How I used Arize Phoenix</span></a>
+    <a href="#results"><span>05</span><span>What happened in the first runs</span></a>
+    <a href="#challenges"><span>06</span><span>Challenges and responses</span></a>
+    <a href="#change-my-mind"><span>07</span><span>What would change my mind</span></a>
+    <a href="#limitations"><span>08</span><span>Limitations</span></a>
+    <a href="#developer-learnings"><span>09</span><span>Learnings for developers</span></a>
+    <a href="#appendix"><span>10</span><span>Instrumentation and cost</span></a>
+    <a href="#references"><span>11</span><span>References</span></a>
   </nav>
 </aside>
 </main></body></html>
