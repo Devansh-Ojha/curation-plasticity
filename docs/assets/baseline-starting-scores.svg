@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="360" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+  <title id="title">Empty-playbook baseline scores</title>
+  <desc id="desc">Three baseline evaluations on the same 40 held-out tasks scored 24, 24, and 30 successes.</desc>
+  <rect width="920" height="360" fill="#fff"/>
+  <text x="72" y="42" font-family="Arial, sans-serif" font-size="18" fill="#26323c">Empty-playbook baseline success</text>
+  <text x="72" y="66" font-family="Arial, sans-serif" font-size="13" fill="#596671">Same seed, held-out task file, and locked model IDs</text>
+  <g stroke="#e5e9ec" stroke-width="1">
+    <line x1="72" y1="112" x2="872" y2="112"/><line x1="72" y1="174" x2="872" y2="174"/>
+    <line x1="72" y1="236" x2="872" y2="236"/><line x1="72" y1="298" x2="872" y2="298"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#596671" text-anchor="end">
+    <text x="62" y="116">40</text><text x="62" y="178">30</text><text x="62" y="240">20</text><text x="62" y="302">0</text>
+  </g>
+  <rect x="180" y="149" width="150" height="149" fill="#6c7f8d"/><rect x="402" y="149" width="150" height="149" fill="#6c7f8d"/><rect x="624" y="112" width="150" height="186" fill="#a56a58"/>
+  <g font-family="Arial, sans-serif" text-anchor="middle"><g font-size="24" fill="#26323c"><text x="255" y="137">24/40</text><text x="477" y="137">24/40</text><text x="699" y="100">30/40</text></g><g font-size="13" fill="#596671"><text x="255" y="324">A0 baseline 1</text><text x="477" y="324">A0 baseline 2</text><text x="699" y="324">A3 baseline</text></g></g>
+</svg>

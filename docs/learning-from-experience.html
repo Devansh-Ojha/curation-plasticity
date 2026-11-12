@@ -32,7 +32,7 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <p class="dek">This project tests whether an API agent can turn failures into reliable playbook rules, separating trace support for a proposed rule from evidence that the rule helps on later tasks.</p>
 </header>
 <hr>
-<p>The evidence comes from early, single-seed A0 and A3 runs. It is useful for auditing the learning loop, not for establishing that a retained playbook caused a performance change; the observed score changes and their limits are reported in <a href="#results">Results</a> and <a href="#limitations">Limitations</a>.</p>
+<p><i>Plasticity</i> here means the efficiency with which an agent turns experience into gains on future held-out tasks. The early answer is that this study cannot yet show such a gain: two empty-playbook baseline evaluations scored 24/40 and 30/40, while the A0 and interim A3 results both declined. The evidence is useful for auditing the learning loop, not for establishing that a retained playbook caused a performance change; see <a href="#results">What happened in the first runs</a> and <a href="#limitations">Limitations</a>.</p>
 
 <h2 id="papers">What the papers contribute</h2>
 <div class="paper-note"><h3><a href="https://arxiv.org/abs/2610.08902">Agent Plasticity: Measuring Self-Improvement Through Experience</a></h3>
@@ -58,7 +58,7 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <div class="table-wrap"><table class="results-table"><thead><tr><th>Split</th><th>Count and categories</th><th>How it is used</th></tr></thead><tbody>
 <tr><td>Training pool</td><td>20: 10 learnable, 6 easy, 2 impossible, 2 unreliable/flaky-judge</td><td>Ten tasks are selected per training epoch; noisy categories are planted in training.</td></tr>
 <tr><td>Held-out ID</td><td>40: 10 easy, 30 learnable; no impossible or unreliable tasks</td><td>Evaluated at baseline and selected checkpoints. All 8 distinct ID instruction templates also occur in training.</td></tr>
-<tr><td>Held-out OOD</td><td>20: all learnable; 7 distinct templates, all also in training and ID</td><td>Generated but not evaluated by the saved real-run protocol.</td></tr>
+<tr><td>Held-out OOD</td><td>20: all learnable; 7 distinct templates, all also in training and ID</td><td><b>Not used:</b> generated but not evaluated by the saved real-run protocol.</td></tr>
 </tbody></table></div>
 <figure><img src="assets/learning-loop.png" alt="Experiment flow: task batch, actor and API, trace evidence, optional A3 curator, Reflector, grounding validator, batch gate, and playbook. Held-out tasks are scored separately and do not update the playbook.">
 <figcaption>Four stages turn training experience into a retained playbook rule. A0-raw skips grounding, while A3 adds curation. The separate held-out check measures a saved playbook checkpoint and never supplies examples for updates.</figcaption></figure>
@@ -71,7 +71,12 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <tr><td>A3, interim<br>epoch 0 → 4</td><td>30/40 → 22/40<br>(75% → 55%)</td><td>19 stayed successful; 7 stayed unsuccessful; 11 regressed; 3 improved</td><td>0.0574</td></tr>
 </tbody></table></div>
 <p>These p-values are two-sided exact McNemar tests on paired task outcomes.</p>
-<p>The A3 checkpoint is interim: epochs 5–8 were still running when this result was recorded. Through epoch 4, the Curator made 40 decisions, including 13 skips and one prior-success anchor; one X-Api-Key rule was retained, and there were no terminal API failures. Those mechanism records do not establish that curation caused the held-out change.</p>
+<h3>The baseline moved without learning</h3>
+<p>The checked A0 demo and A3 run used seed 42, the same generated 40-task held-out file, the same locked actor and optimizer models, and empty playbooks at baseline. Their 24/40 and 30/40 baseline scores differ by six tasks (15 percentage points). This is only a two-run range, not a measured noise distribution, but it is larger than the five-task A0 drop and close to the eight-task A3 drop. A matched no-update baseline is needed before interpreting either change.</p>
+<figure><img src="assets/baseline-starting-scores.svg" alt="Three empty-playbook baseline scores on the same 40-task held-out set: 24, 24, and 30 successes.">
+<figcaption>Starting scores from the two saved A0 baselines and the A3 baseline. The six-task spread is a warning signal, not a formal variance estimate.</figcaption></figure>
+<div class="callout"><b>Not a matched arm comparison.</b> A3 is an interim epoch-4 checkpoint, while the saved A0 runs use different durations and evaluation schedules. The rows show observations from the same testbed, not evidence that one arm caused a difference.</div>
+<p>The A3 checkpoint is interim: epochs 5–8 were still running when this result was recorded. Through epoch 4, the Curator made 40 decisions: 27 run decisions and 13 skips; only one decision supplied a prior-success anchor, so retrieval was barely tested. One X-Api-Key rule was retained and there were no terminal API failures. With 11 regressions and three improvements, the pattern is compatible with run-to-run noise or a harmful/generalized-too-broadly rule; the missing per-task request-header record cannot distinguish them.</p>
 <figure><img src="assets/heldout-success-a0-seed42.png" alt="Held-out ID success at the saved checkpoints for two separate A0 seed-42 runs.">
 <figcaption>The longer run was checkpointed through epoch 5; held-out evaluation was saved at epochs 0 and 4.</figcaption></figure>
 <figure><img src="assets/heldout-transitions-a0-seed42.png" alt="Among 40 held-out tasks in the completed three-epoch run, 19 stayed successful, 16 stayed unsuccessful, 5 regressed, and none improved.">
@@ -79,13 +84,14 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <p>All 16 tasks that failed at both checkpoints were labeled learnable; none were among the planted impossible or unreliable tasks. The five regressions were also learnable. The baseline failures therefore leave apparent headroom, although repeated instruction templates limit how much this says about generalization to new task patterns.</p>
 
 <h3>The gate accepted a tie with a regression</h3>
-<p>At epoch 3, the current and candidate training scores were both 5/10. The candidate was accepted even though a task that had passed now failed. Since the aggregate stayed level, at least one other task moved from failure to success. The accepted operations were duplicate copies of the same X-Api-Key rule, so the playbook ended with two entries but only one distinct instruction.</p>
+<p>At epoch 3, the current and candidate training scores were both 5/10. The candidate was accepted even though a task that had passed now failed. Because the aggregate stayed level, at least one other task must have moved from failure to success; that countervailing move is inferred, because complete paired training outcomes were not saved. The accepted operations were duplicate copies of the same X-Api-Key rule, so the playbook ended with two entries but only one distinct instruction.</p>
 <h3>Proposal outcomes</h3>
 <div class="table-wrap"><table class="results-table"><thead><tr><th>Saved run</th><th>Grounding rejects</th><th>Reflector API failures</th><th>Gate rejects</th><th>Rules retained</th></tr></thead><tbody>
 <tr><td>Three-epoch A0</td><td>2</td><td>0</td><td>1 (7/10 → 6/10)</td><td>2 duplicate operations; 1 distinct rule</td></tr>
 <tr><td>Longer A0, through epoch 5</td><td>0</td><td>6 timeouts, 2 each in epochs 2–4</td><td>2 (7/10 → 6/10; 9/10 → 8/10)</td><td>0</td></tr>
+<tr><td>A3, through epoch 4</td><td>2</td><td>3 timeouts</td><td>1 (7/10 → 6/10)</td><td>1 X-Api-Key rule</td></tr>
 </tbody></table></div>
-<p>The longer run’s six Reflector failures meant no rule proposal was evaluated in those three epochs. It reached epoch 5 with no retained rules, so it provides little evidence about whether reflection improves task performance.</p>
+<p>The longer A0 run’s six Reflector failures meant no rule proposal was evaluated in those three epochs. It reached epoch 5 with no retained rules, so it provides little evidence about whether reflection improves task performance. The worked-example rule below is in the same X-Api-Key family as the later retained rule, but the saved records do not establish that it was the byte-identical operation.</p>
 
 <h3>One proposal traced from request to gate</h3>
 <div class="worked-example">
@@ -105,21 +111,19 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <p>In the completed run, held-out evaluation accounted for 59% of the configured reference-cost estimate because all 40 ID tasks were evaluated at baseline and epoch 3.</p>
 
 <h2 id="change-my-mind">What would change my mind</h2>
-<p>Before running A0-raw and A3, set a practical threshold—for example, a five-percentage-point held-out difference across matched seeds. I would count grounding as helping if A0 beats A0-raw by at least that margin, the paired uncertainty interval excludes zero, and the rule audit finds fewer unsupported retained rules. I would count it as harmful if the direction reverses or task regressions increase. If intervals cover both outcomes, the result is inconclusive. A3 should be judged separately against A0 because it combines curation and prior-success retrieval.</p>
-<p>A future protocol should preregister the gate criterion, use a larger gate batch or multiple gate batches, and separately audit per-task regressions and duplicate rules.</p>
+<p>Before running A0-raw and A3, repeat empty-playbook baselines and set a practical threshold from that measured spread. Until then, a claimed difference should exceed the observed 15-percentage-point two-run range, not a five-percentage-point threshold. I would count grounding as helping only if A0 beats A0-raw by that preregistered margin, the paired uncertainty interval excludes zero, and the rule audit finds fewer unsupported retained rules. I would count it as harmful if the direction reverses or task regressions increase. If intervals cover both outcomes, the result is inconclusive. A3 should be judged separately against A0 because it combines curation and prior-success retrieval.</p>
+<p>A future protocol should preregister the gate criterion, reject a candidate if any previously passing task fails, deduplicate equivalent rules before writing the playbook, and use a larger gate batch or multiple gate batches so one task does not move the score by 10 percentage points.</p>
 
 <h2 id="limitations">Limitations</h2>
-<p>The saved evidence comprises A0 seed 42 runs and one interim A3 seed-42 checkpoint. There is no repeated no-update baseline or A0-raw comparison, and the A0 and A3 runs are not matched in duration or checkpoint schedule. Thus the held-out changes reported in <a href="#results">Results</a> cannot be separated from run-to-run model variation or attributed to a playbook rule. Both paired tests are post-hoc and small.</p>
+<p>The saved evidence comprises A0 seed 42 runs and one interim A3 seed-42 checkpoint. The observed six-task baseline spread comes from only two no-update observations; it is not yet a noise estimate. There is no A0-raw comparison, and the A0 and A3 runs are not matched in duration or checkpoint schedule. Thus the held-out changes reported in <a href="#results">What happened in the first runs</a> cannot be separated from run-to-run model variation or attributed to a playbook rule. Both paired tests are post-hoc and small.</p>
 <p>The held-out ID set repeats the training instruction templates, and the generated OOD split repeats those templates too; moreover, the runner did not evaluate OOD. The saved results record playbook reads but not per-task header use. Retry logs record task IDs and retry numbers but omit the evaluation epoch. All 40 held-out task IDs produced at least one HTTP 429 retry record (80 records total), so every held-out task was retried at least once; rate limiting may therefore affect timing-sensitive outcomes. These runs use a synthetic API and do not establish performance on production APIs.</p>
 
-<h2 id="phoenix-workflow">How I used Arize Phoenix</h2>
-<p>I used a local <a href="https://phoenix.arize.com/">Arize Phoenix</a> instance as the experiment-review layer, not as the source of scores or learning updates. Before a run, the runner creates or reuses a seed-specific held-out dataset containing opaque task IDs and sanitized task text. It refuses category labels and redacts test-key-like strings before upload, so Phoenix does not receive the hidden labels, expected answers, or the NVIDIA credential.</p>
-<p>At each saved held-out checkpoint, the runner replays the saved per-task outcomes into a Phoenix experiment named by arm, seed, run tag, and epoch. Three deterministic code evaluators record whether the task succeeded, the number of steps used, and whether the actor read the playbook. In Phoenix, I use those checkpoint experiments to compare the same held-out dataset across arms and epochs—for example, baseline versus epoch 4 for A3—then use the local result files to investigate any surprising movement.</p>
-<p>The workflow has two complementary records. Phoenix receives local OpenTelemetry spans with allowlisted run metadata such as arm, seed, epoch, phase, model ID, status, and token or latency summaries. The local JSON and JSONL artifacts retain the detailed episode outcomes, proposal decisions, gate comparisons, and retry events needed for audit. Prompts, model outputs, labels, and credentials are excluded from Phoenix spans; Phoenix is therefore a navigation and comparison surface, while the local artifacts remain the detailed evidence.</p>
-
 <h2 id="appendix">Appendix: instrumentation, hosting, and cost</h2>
-<p>For the completed three-epoch run, the configured hypothetical reference-cost estimate was about $0.061; the longer saved run was about $0.111 through checkpoint 5. These estimates are not provider charges.</p>
-<p>Hosted inference used the NVIDIA API access available to me at no charge, with Nemotron for the actor and Llama 3.2 for Reflector/optimizer calls. The key is read from <code>NVIDIA_API_KEY</code> and is not included in the repository. Free access was rate-limited and experienced timeouts. Episodes retry up to three whole-episode attempts; if an API error persists, the episode is not scored as a task failure—the run stops instead. The completed held-out evaluations have zero terminal API failures. The scope and possible effect of the 429 retries are noted in <a href="#limitations">Limitations</a>.</p>
+<h3>Arize Phoenix workflow</h3>
+<p>I used a local <a href="https://phoenix.arize.com/">Arize Phoenix</a> instance to compare saved held-out checkpoints by arm, seed, and epoch. It receives sanitized task text, opaque IDs, deterministic success/steps/playbook-read evaluations, and allowlisted span metadata; local JSON/JSONL retains the detailed episode, proposal, gate, and retry audit record. Prompts, model outputs, labels, and credentials are excluded from Phoenix spans.</p>
+<h3>Costs, retries, and possible explanations</h3>
+<p>The configured hypothetical reference-cost estimate was about $0.061 for the completed three-epoch A0 run, $0.111 for the longer A0 run through checkpoint 5, and $0.107 for A3 through epoch 4, including Curator calls. These are not provider charges. Cost per held-out gain cannot be estimated because no matched arm has a demonstrated gain. The 80 HTTP 429 records refer to the completed three-epoch A0 held-out evaluations: they are HTTP-level retries, not 80 whole-episode retries. Whole episodes retry up to three times after persistent API errors; if that still fails, the episode is not scored as a task failure and the run stops instead.</p>
+<p>Possible explanations for the score changes are hypotheses, not conclusions: run-to-run model variance, unmeasured misuse of a retained rule, a coarse 10-task gate, rate-limit timing effects, and Reflector timeouts in the longer A0 run.</p>
 <figure><img src="assets/estimated-cost-by-phase-a0-seed42.png" alt="Hypothetical reference-cost estimate for the completed three-epoch run: evaluation 59%, acting 19%, gate reruns 13%, reflection 9%, curation 0%.">
 <figcaption>Phase breakdown of configured reference-price estimates for the completed A0 run.</figcaption></figure>
 <p>To reproduce a short hosted run, start Phoenix locally, set <code>NVIDIA_API_KEY</code>, and run from the repository root:</p>
@@ -137,12 +141,11 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
     <a href="#papers"><span>01</span><span>What the papers contribute</span></a>
     <a href="#failure-signal"><span>02</span><span>Why failures need diagnosis</span></a>
     <a href="#experiment"><span>03</span><span>What we are testing</span></a>
-    <a href="#results"><span>04</span><span>What the first runs exposed</span></a>
+    <a href="#results"><span>04</span><span>What happened in the first runs</span></a>
     <a href="#change-my-mind"><span>05</span><span>What would change my mind</span></a>
     <a href="#limitations"><span>06</span><span>Limitations</span></a>
-    <a href="#phoenix-workflow"><span>07</span><span>How I used Arize Phoenix</span></a>
-    <a href="#appendix"><span>08</span><span>Instrumentation and cost</span></a>
-    <a href="#references"><span>09</span><span>References</span></a>
+    <a href="#appendix"><span>07</span><span>Instrumentation and cost</span></a>
+    <a href="#references"><span>08</span><span>References</span></a>
   </nav>
 </aside>
 </main></body></html>

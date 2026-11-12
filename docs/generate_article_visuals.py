@@ -54,7 +54,7 @@ def save_checkpoint_comparison(short: dict, long: dict, out: Path) -> None:
     series = [
         ("Three-epoch run · complete", short, short_epochs[-1],
          f"Completed through epoch {short.get('completed_epoch')}"),
-        ("Eight-epoch run · incomplete", long, long_epochs[-1],
+        ("Longer A0 run · incomplete", long, long_epochs[-1],
          f"Stopped at checkpoint {long.get('completed_epoch')} of {long.get('total_epochs')}"),
     ]
     fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.2), sharey=True,
