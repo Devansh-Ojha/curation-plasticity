@@ -35,7 +35,7 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <hr>
 <p><i>Plasticity</i> here means the efficiency with which an agent turns experience into gains on future held-out tasks. The early answer is that this study cannot yet show such a gain: two empty-playbook baseline evaluations scored 24/40 and 30/40, while the A0 and interim A3 results both declined. The evidence is useful for auditing the learning loop, not for establishing that a retained playbook caused a performance change; see <a href="#results">What happened in the first runs</a> and <a href="#limitations">Limitations</a>.</p>
 <p>I built this because production agents do not only fail from a bad prompt: they also encounter flaky tools, rate limits, bad task assumptions, and imperfect judges. If an agent treats every failure as a lesson, it can preserve a confident but harmful instruction; this project makes that failure-to-rule path observable and testable.</p>
-<div class="callout"><b>Key takeaways.</b> Empty-playbook baselines moved by six tasks; a 10-task gate accepted a tie despite a regression; and the interim A3 run retained one distinct rule but did not improve held-out success.</div>
+<div class="callout"><b>Key takeaways.</b> Empty-playbook baselines moved by six tasks; a 10-task gate accepted a tie despite a regression; the 11 A3 regressions clustered in three repeated templates; and the interim A3 run retained one distinct rule but did not improve held-out success.</div>
 
 <h2 id="papers">What the papers contribute</h2>
 <div class="paper-note"><h3><a href="https://arxiv.org/abs/2610.08902">Agent Plasticity: Measuring Self-Improvement Through Experience</a></h3>
@@ -73,13 +73,13 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <tr><td>Longer A0<br>epoch 0 → 4 evaluation</td><td>24/40 → 22/40<br>(60% → 55%)</td><td>22 stayed successful; 16 stayed unsuccessful; 2 regressed; 0 improved</td><td>0.50</td></tr>
 <tr><td>A3, interim<br>epoch 0 → 4</td><td>30/40 → 22/40<br>(75% → 55%)</td><td>19 stayed successful; 7 stayed unsuccessful; 11 regressed; 3 improved</td><td>0.0574</td></tr>
 </tbody></table></div>
-<p>These p-values are two-sided exact McNemar tests on paired task outcomes. That test treats each task’s paired outcome as stable enough to be informative; the six-task empty-playbook baseline spread shows this assumption is doubtful here, so these p-values are optimistic exploratory summaries rather than confirmatory evidence.</p>
+<p>These p-values are two-sided exact McNemar tests on paired task outcomes. That test treats each task’s paired outcome as stable enough to be informative; the six-task empty-playbook baseline spread shows this assumption is doubtful here, so these p-values are optimistic exploratory summaries rather than confirmatory evidence. In particular, A3’s 0.0574 should not be read as “almost significant” when the baseline itself moved.</p>
 <h3>The baseline moved without learning</h3>
 <p>The checked A0 demo and A3 run used seed 42, the same generated 40-task held-out file, the same locked actor and optimizer models, and empty playbooks at baseline. Their 24/40 and 30/40 baseline scores differ by six tasks (15 percentage points). This is only a two-run range, not a measured noise distribution, but it is larger than the five-task A0 drop and close to the eight-task A3 drop. The source of the difference is unknown; model nondeterminism and rate-limit timing are plausible explanations. A matched no-update baseline is needed before interpreting either change.</p>
 <figure><img src="assets/baseline-starting-scores.svg" alt="Three empty-playbook baseline scores on the same 40-task held-out set: 24, 24, and 30 successes.">
 <figcaption>Starting scores from the two saved A0 baselines and the A3 baseline. The six-task spread is a warning signal, not a formal variance estimate.</figcaption></figure>
 <div class="callout"><b>Not a matched arm comparison.</b> A3 is an interim epoch-4 checkpoint, while the saved A0 runs use different durations and evaluation schedules. The rows show observations from the same testbed, not evidence that one arm caused a difference.</div>
-<p>Through epoch 4, the Curator made 40 decisions: 27 run decisions and 13 skips. Ten skip decisions were labeled <i>Mastered</i> and three <i>Operationally impossible</i>; some refer to the same task ID in separate epochs. Only one decision supplied a prior-success anchor, so retrieval was barely tested. One X-Api-Key rule was retained. The proposal table’s three Reflector timeouts were retried model-call failures; “no terminal API failures” means no task episode exhausted its whole-episode retry budget and stopped the run.</p>
+<p>Through epoch 4, the Curator made 40 decisions: 27 run decisions and 13 skips. Ten skip decisions were labeled <i>Mastered</i> and three <i>Operationally impossible</i>. The latter are not three distinct impossible tasks: one task was skipped twice and one once. Skipping already-mastered tasks may also have left fewer learnable failures for reflection, which could help explain why A3 retained only one rule. Only one decision supplied a prior-success anchor, so retrieval was barely tested. One X-Api-Key rule was retained. The proposal table’s three Reflector timeouts were retried model-call failures; “no terminal API failures” means no task episode exhausted its whole-episode retry budget and stopped the run.</p>
 <figure><img src="assets/heldout-success-a0-seed42.png" alt="Held-out ID success at the saved checkpoints for two separate A0 seed-42 runs.">
 <figcaption>The longer run was checkpointed through epoch 5; held-out evaluation was saved at epochs 0 and 4.</figcaption></figure>
 <figure><img src="assets/heldout-transitions-a0-seed42.png" alt="Among 40 held-out tasks in the completed three-epoch run, 19 stayed successful, 16 stayed unsuccessful, 5 regressed, and none improved.">
@@ -113,11 +113,11 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <p>In the epoch-3 held-out evaluation, the actor read the playbook on 34 of 40 tasks. The saved per-task evaluation rows do not link outcomes to the actual request headers, so they cannot show whether the actor included X-Api-Key after reading the rule. Rule adherence—and whether a failure came from a bad rule or failure to apply it—remains unmeasured.</p>
 <p>In the completed run, held-out evaluation accounted for 59% of the configured reference-cost estimate because all 40 ID tasks were evaluated at baseline and epoch 3.</p>
 
-<h3>Possible explanations</h3>
+<h3 id="possible-explanations">Possible explanations</h3>
 <p>The A3 comparison contains 11 regressions and three improvements. A Phoenix checkpoint comparison surfaces those task IDs; matching them to the sanitized task text shows all 11 are labeled learnable and concentrate in three repeated templates: list orders (4), create an order (4), and create a user (3). This is a useful diagnostic pattern, but not a causal diagnosis: it could reflect run-to-run model variance, a retained rule applied too broadly, a coarse gate, or rate-limit timing. The local audit lacks final request headers, so it cannot identify which explanation applies to each task.</p>
 
 <h2 id="phoenix-workflow">How I used Arize Phoenix</h2>
-<p>The results above are what Phoenix helped me find. I used a local <a href="https://phoenix.arize.com/">Arize Phoenix</a> instance as the experiment-review surface, not as the source of the learning signal or score. It let me compare the same held-out dataset at each saved checkpoint without uploading labels, expected answers, or credentials.</p>
+<p>The template pattern above is what Phoenix helped me find. I used a local <a href="https://phoenix.arize.com/">Arize Phoenix</a> instance as the experiment-review surface, not as the source of the learning signal or score. It let me compare the same held-out dataset at each saved checkpoint without uploading labels, expected answers, or credentials.</p>
 <h3>Dataset experiments for checkpoint comparison</h3>
 <p>For each seed, the runner creates or reuses a Phoenix dataset containing sanitized held-out task text and opaque task IDs. At baseline and each scheduled checkpoint, it replays saved task outcomes as a named experiment keyed by arm, seed, run tag, and epoch. I used the comparison view to inspect task success, steps used, and whether the actor read the playbook, then used the regressing IDs to find the repeated task templates above.</p>
 <h3>Trace context for failure diagnosis</h3>
@@ -128,7 +128,7 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 
 <h2 id="change-my-mind">What would change my mind</h2>
 <p>Before running A0-raw and A3, repeat empty-playbook baselines and set a practical threshold from that measured spread. Until then, a claimed difference should exceed the observed 15-percentage-point two-run range, not a five-percentage-point threshold. I would count grounding as helping only if A0 beats A0-raw by that preregistered margin, the paired uncertainty interval excludes zero, and the rule audit finds fewer unsupported retained rules. I would count it as harmful if the direction reverses or task regressions increase. If intervals cover both outcomes, the result is inconclusive. A3 should be judged separately against A0 because it combines curation and prior-success retrieval.</p>
-<h3>Next protocol changes</h3>
+<h3 id="next-protocol">Next protocol changes</h3>
 <p>A future protocol should preregister the gate criterion, reject a candidate if any previously passing task fails, deduplicate equivalent rules before writing the playbook, and use a larger gate batch or multiple gate batches so one task does not move the score by 10 percentage points.</p>
 
 <h2 id="limitations">Limitations</h2>
@@ -141,11 +141,11 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
 <h2 id="appendix">Appendix: instrumentation, hosting, and cost</h2>
 <h3>Costs</h3>
 <div class="table-wrap"><table class="results-table"><thead><tr><th>Run</th><th>Checkpoint</th><th>Total estimate</th><th>Curator estimate</th></tr></thead><tbody><tr><td>Three-epoch A0</td><td>epoch 3</td><td>$0.061</td><td>$0.000</td></tr><tr><td>Longer A0</td><td>epoch 5</td><td>$0.111</td><td>$0.000</td></tr><tr><td>A3</td><td>epoch 4</td><td>$0.107</td><td>$0.049 (46%)</td></tr></tbody></table></div>
-<p>These are configured hypothetical reference-cost estimates, not provider charges. Cost per held-out gain cannot be estimated because no matched arm has a demonstrated gain.</p>
+<p>These are configured hypothetical reference-cost estimates, not provider charges. Through epoch 4, curation consumed $0.049 of A3’s $0.107 estimate (46%), whereas the A0 chart has $0 curation because A0 has no Curator. That is the only current per-dollar signal: A3 spent substantial extra curation budget without a held-out gain, but its four-epoch schedule is not matched to either A0 run. Cost per held-out gain cannot yet be estimated.</p>
 <h3>Retries</h3>
-<p>The 80 HTTP 429 records refer to the completed three-epoch A0 held-out evaluations: they are HTTP-level retries, not 80 whole-episode retries. Whole episodes retry up to three times after persistent API errors; if that still fails, the episode is not scored as a task failure and the run stops instead.</p>
+<p>The 80 HTTP 429 records refer to the completed three-epoch A0 held-out evaluations: they are HTTP-level retries, not 80 whole-episode retries. Whole episodes retry up to three times after persistent API errors; if that still fails, the episode is not scored as a task failure and the run stops instead, so no held-out score includes an API-failure episode.</p>
 <figure><img src="assets/estimated-cost-by-phase-a0-seed42.png" alt="Hypothetical reference-cost estimate for the completed three-epoch run: evaluation 59%, acting 19%, gate reruns 13%, reflection 9%, curation 0%.">
-<figcaption>Phase breakdown of configured reference-price estimates for the completed A0 run.</figcaption></figure>
+<figcaption>Completed three-epoch A0 run only. Its curation bar is $0 because A0 has no Curator; see the table above for A3 costs.</figcaption></figure>
 <p>To reproduce a short hosted run, start Phoenix locally, set <code>NVIDIA_API_KEY</code>, and run from the repository root:</p>
 <pre>python -m scripts.experiments.run_real_experiment --arm A0 --seed 42 --epochs 3 --eval-epochs 0,3 --run-tag demo</pre>
 
@@ -162,13 +162,15 @@ aside nav{display:grid;gap:2px}aside a{display:grid;grid-template-columns:28px 1
     <a href="#failure-signal"><span>02</span><span>Why failures need diagnosis</span></a>
     <a href="#experiment"><span>03</span><span>What we are testing</span></a>
     <a href="#results"><span>04</span><span>What happened in the first runs</span></a>
-    <a href="#phoenix-workflow"><span>05</span><span>How I used Arize Phoenix</span></a>
-    <a href="#challenges"><span>06</span><span>Challenges and how I handled them</span></a>
-    <a href="#change-my-mind"><span>07</span><span>What would change my mind</span></a>
-    <a href="#limitations"><span>08</span><span>Limitations</span></a>
-    <a href="#developer-learnings"><span>09</span><span>Learnings for other developers</span></a>
-    <a href="#appendix"><span>10</span><span>Appendix: instrumentation, hosting, and cost</span></a>
-    <a href="#references"><span>11</span><span>References</span></a>
+    <a href="#possible-explanations"><span>05</span><span>Possible explanations</span></a>
+    <a href="#phoenix-workflow"><span>06</span><span>How I used Arize Phoenix</span></a>
+    <a href="#challenges"><span>07</span><span>Challenges and how I handled them</span></a>
+    <a href="#change-my-mind"><span>08</span><span>What would change my mind</span></a>
+    <a href="#next-protocol"><span>09</span><span>Next protocol changes</span></a>
+    <a href="#limitations"><span>10</span><span>Limitations</span></a>
+    <a href="#developer-learnings"><span>11</span><span>Learnings for other developers</span></a>
+    <a href="#appendix"><span>12</span><span>Appendix: instrumentation, hosting, and cost</span></a>
+    <a href="#references"><span>13</span><span>References</span></a>
   </nav>
 </aside>
 </main></body></html>
